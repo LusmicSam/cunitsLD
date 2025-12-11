@@ -447,7 +447,7 @@ export default function Lecture1Page() {
             {/* HEADER */}
             <header className="fixed top-0 left-0 right-0 h-16 bg-[#020617]/90 backdrop-blur-md border-b border-slate-800 z-50 flex items-center justify-between px-6 md:px-12">
                 <div className="flex items-center gap-3">
-                    <img src="/logo.png" alt="C-Units Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-900/20" />
+                    <img src="/cunits/logo.png" alt="C-Units Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-900/20" />
                     <div className="hidden md:block">
                         <h1 className="font-bold text-white text-sm leading-tight">Pointers & Memory</h1>
                         <p className="text-[10px] text-slate-500 uppercase tracking-widest">Unit 5 • Lecture 1</p>

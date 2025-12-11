@@ -386,7 +386,7 @@ const Lecture2Page = () => {
             <header className="fixed top-0 left-0 right-0 h-16 bg-[#020617]/90 backdrop-blur-md border-b border-slate-800 z-40 flex items-center justify-between px-6 md:px-12">
                 <div className="flex items-center gap-3">
                     <Image
-                        src="/logo.png"
+                        src="/cunits/logo.png"
                         alt="Logo"
                         width={32}
                         height={32}
