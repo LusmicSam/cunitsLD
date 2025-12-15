@@ -334,7 +334,7 @@ export default function Lecture2Page() {
             {/* NAVIGATION HEADER */}
             <header className="fixed top-0 left-0 right-0 h-16 bg-background/90 backdrop-blur-md border-b border-border z-50 flex items-center justify-between px-6 md:px-12">
                 <div className="flex items-center gap-3">
-                    <img src="/cunits/logo.png" alt="C-Units Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-900/20" />
+                    <img src="/cunitsLD/logo.png" alt="C-Units Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-900/20" />
                     <div className="hidden md:block">
                         <h1 className="font-bold text-foreground text-sm leading-tight">Data Storage & Rep.</h1>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Unit 1 • Lecture 2</p>

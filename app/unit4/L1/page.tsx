@@ -437,7 +437,7 @@ const Lecture1Page = () => {
             <header className="fixed top-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-md border-b border-border z-50 flex items-center justify-between px-6 md:px-12 transition-all">
                 <div className="flex items-center gap-4">
                     <div className="w-10 h-10 flex items-center justify-center">
-                        <img src="/cunits/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                        <img src="/cunitsLD/logo.png" alt="Logo" className="w-full h-full object-contain" />
                     </div>
                     <div className="flex flex-col">
                         <h1 className="font-bold text-foreground text-sm md:text-base leading-tight">Introduction to Arrays</h1>

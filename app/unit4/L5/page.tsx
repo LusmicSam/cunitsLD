@@ -210,7 +210,7 @@ const Lecture5Page = () => {
             <header className="fixed top-0 left-0 right-0 h-16 bg-background/90 backdrop-blur-md border-b border-border z-40 flex items-center justify-between px-6 md:px-12">
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 flex items-center justify-center">
-                        <img src="/cunits/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                        <img src="/cunitsLD/logo.png" alt="Logo" className="w-full h-full object-contain" />
                     </div>
                     <div>
                         <h1 className="font-bold text-foreground text-sm md:text-base leading-tight">Sorting: Bubble Sort</h1>
