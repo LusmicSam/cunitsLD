@@ -16,29 +16,30 @@ import {
     Copy,
     Info
 } from 'lucide-react';
+import { ModeToggle } from '@/components/theme-toggle';
 
 // --- SHARED COMPONENTS ---
 
 const SectionHeader = ({ title, icon: Icon, color = "blue" }: { title: string, icon: any, color?: string }) => (
-    <div className="flex items-center gap-3 mb-8 border-b border-slate-800 pb-4">
-        <span className={`bg-${color}-600/20 text-${color}-400 p-2 rounded-lg`}>
+    <div className="flex items-center gap-3 mb-8 border-b border-border pb-4">
+        <span className={`bg-${color}-100 dark:bg-${color}-600/20 text-${color}-600 dark:text-${color}-400 p-2 rounded-lg`}>
             <Icon size={24} />
         </span>
-        <h2 className="text-2xl font-bold text-white">{title}</h2>
+        <h2 className="text-2xl font-bold text-foreground">{title}</h2>
     </div>
 );
 
 const CodeBlock = ({ code, title }: { code: string, title?: string }) => (
-    <div className="bg-[#0d1117] rounded-lg overflow-hidden border border-slate-700 my-4 shadow-xl font-mono text-sm w-full">
-        <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-slate-700">
+    <div className="bg-card rounded-lg overflow-hidden border border-border my-4 shadow-xl font-mono text-sm w-full">
+        <div className="flex items-center justify-between px-4 py-2 bg-muted border-b border-border">
             <div className="flex gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
             </div>
-            <span className="text-xs text-slate-500 uppercase">{title || "C Snippet"}</span>
+            <span className="text-xs text-muted-foreground uppercase">{title || "C Snippet"}</span>
         </div>
-        <div className="p-4 text-slate-300 overflow-x-auto whitespace-pre leading-relaxed">
+        <div className="p-4 text-muted-foreground overflow-x-auto whitespace-pre leading-relaxed">
             {code}
         </div>
     </div>
@@ -46,20 +47,20 @@ const CodeBlock = ({ code, title }: { code: string, title?: string }) => (
 
 const TheoryCard = ({ title, children, variant = 'blue' }: { title: string, children: React.ReactNode, variant?: string }) => {
     const colors: Record<string, string> = {
-        blue: 'border-blue-500 bg-blue-900/10',
-        purple: 'border-purple-500 bg-purple-900/10',
-        orange: 'border-orange-500 bg-orange-900/10',
-        red: 'border-red-500 bg-red-900/10',
-        green: 'border-green-500 bg-green-900/10',
-        yellow: 'border-yellow-500 bg-yellow-900/10'
+        blue: 'border-blue-500 bg-blue-50 dark:bg-blue-900/10',
+        purple: 'border-purple-500 bg-purple-50 dark:bg-purple-900/10',
+        orange: 'border-orange-500 bg-orange-50 dark:bg-orange-900/10',
+        red: 'border-red-500 bg-red-50 dark:bg-red-900/10',
+        green: 'border-green-500 bg-green-50 dark:bg-green-900/10',
+        yellow: 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/10'
     };
 
     return (
-        <div className={`border-l-4 ${colors[variant]} rounded-r-lg p-6 my-6 transition-all hover:bg-opacity-20 backdrop-blur-sm`}>
-            <h4 className="text-lg font-bold text-white flex items-center gap-2 mb-3">
+        <div className={`border-l-4 ${colors[variant]} rounded-r-lg p-6 my-6 transition-all hover:bg-opacity-80 backdrop-blur-sm`}>
+            <h4 className="text-lg font-bold text-foreground flex items-center gap-2 mb-3">
                 {title}
             </h4>
-            <div className="text-slate-300 text-sm leading-relaxed space-y-2">
+            <div className="text-muted-foreground text-sm leading-relaxed space-y-2">
                 {children}
             </div>
         </div>
@@ -81,21 +82,21 @@ const CallocVsMalloc = () => {
     };
 
     return (
-        <div className="bg-[#0f172a] p-6 rounded-xl border border-slate-700 my-8">
-            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                <Layers size={20} className="text-blue-400" /> The Zero-Init Lab
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <Layers size={20} className="text-blue-500" /> The Zero-Init Lab
             </h3>
 
             <div className="flex justify-center gap-4 mb-8">
                 <button
                     onClick={() => { setMethod('malloc'); setBlocks([]); }}
-                    className={`px-4 py-2 rounded-full font-bold transition-all ${method === 'malloc' ? 'bg-orange-600 text-white' : 'bg-slate-800 text-slate-400'}`}
+                    className={`px-4 py-2 rounded-full font-bold transition-all ${method === 'malloc' ? 'bg-orange-600 text-white' : 'bg-muted text-muted-foreground'}`}
                 >
                     malloc(5 * sizeof(int))
                 </button>
                 <button
                     onClick={() => { setMethod('calloc'); setBlocks([]); }}
-                    className={`px-4 py-2 rounded-full font-bold transition-all ${method === 'calloc' ? 'bg-green-600 text-white' : 'bg-slate-800 text-slate-400'}`}
+                    className={`px-4 py-2 rounded-full font-bold transition-all ${method === 'calloc' ? 'bg-green-600 text-white' : 'bg-muted text-muted-foreground'}`}
                 >
                     calloc(5, sizeof(int))
                 </button>
@@ -109,23 +110,23 @@ const CallocVsMalloc = () => {
                     <Box size={16} /> Allocate Memory
                 </button>
 
-                <div className="flex gap-2 p-4 bg-slate-900 rounded-xl border border-slate-800 min-h-[100px] items-center">
+                <div className="flex gap-2 p-4 bg-muted rounded-xl border border-border min-h-[100px] items-center">
                     {blocks.length === 0 ? (
-                        <span className="text-slate-600 italic">Memory Empty</span>
+                        <span className="text-muted-foreground italic">Memory Empty</span>
                     ) : (
                         blocks.map((val, i) => (
                             <div key={i} className="flex flex-col items-center animate-in zoom-in">
                                 <div className={`w-12 h-12 flex items-center justify-center font-mono font-bold text-lg rounded border-2 
-                  ${val === 0 ? 'border-green-500 text-green-400 bg-green-900/20' : 'border-red-500 text-red-400 bg-red-900/20'}`}>
+                  ${val === 0 ? 'border-green-500 text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/20' : 'border-red-500 text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20'}`}>
                                     {method === 'malloc' ? '?' : val}
                                 </div>
-                                <span className="text-[10px] text-slate-500 mt-1">[{i}]</span>
+                                <span className="text-[10px] text-muted-foreground mt-1">[{i}]</span>
                             </div>
                         ))
                     )}
                 </div>
 
-                <div className="text-center text-sm text-slate-400">
+                <div className="text-center text-sm text-muted-foreground">
                     {method === 'malloc'
                         ? "Malloc creates space but DOES NOT clear it. It contains random 'garbage' from previous use."
                         : "Calloc creates space AND initializes every byte to zero. Safer but slightly slower."}
@@ -166,29 +167,29 @@ const ReallocSim = () => {
     };
 
     return (
-        <div className="bg-[#0f172a] p-6 rounded-xl border border-slate-700 my-8">
-            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                <RefreshCw size={20} className="text-purple-400" /> The Resizer (realloc)
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <RefreshCw size={20} className="text-purple-500" /> The Resizer (realloc)
             </h3>
 
             <div className="flex gap-4 mb-6 justify-center">
-                <label className="flex items-center gap-2 cursor-pointer bg-slate-900 p-2 rounded border border-slate-700">
+                <label className="flex items-center gap-2 cursor-pointer bg-muted p-2 rounded border border-border">
                     <input
                         type="radio" name="scen" checked={scenario === 'expand'} onChange={() => setScenario('expand')}
                         className="accent-purple-500"
                     />
-                    <span className="text-sm text-slate-300">Scenario A: Space Available</span>
+                    <span className="text-sm text-muted-foreground">Scenario A: Space Available</span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer bg-slate-900 p-2 rounded border border-slate-700">
+                <label className="flex items-center gap-2 cursor-pointer bg-muted p-2 rounded border border-border">
                     <input
                         type="radio" name="scen" checked={scenario === 'move'} onChange={() => setScenario('move')}
                         className="accent-purple-500"
                     />
-                    <span className="text-sm text-slate-300">Scenario B: Blocked (Must Move)</span>
+                    <span className="text-sm text-muted-foreground">Scenario B: Blocked (Must Move)</span>
                 </label>
             </div>
 
-            <div className="relative h-32 bg-slate-900 rounded-xl border border-slate-800 overflow-hidden mb-6 flex items-center px-4">
+            <div className="relative h-32 bg-muted rounded-xl border border-border overflow-hidden mb-6 flex items-center px-4">
                 {/* Memory Strip */}
                 <div className="flex gap-1 w-full">
                     {/* Initial/Current Block */}
@@ -201,7 +202,7 @@ const ReallocSim = () => {
 
                     {/* Obstacle for Scenario B */}
                     {scenario === 'move' && (
-                        <div className="h-16 w-16 bg-red-900/50 border border-red-500/50 rounded flex items-center justify-center text-red-400 text-xs font-bold">
+                        <div className="h-16 w-16 bg-red-100 dark:bg-red-900/50 border border-red-500/50 rounded flex items-center justify-center text-red-600 dark:text-red-400 text-xs font-bold">
                             BLOCK
                         </div>
                     )}
@@ -218,12 +219,12 @@ const ReallocSim = () => {
                 </div>
 
                 {/* Address Labels */}
-                <div className="absolute bottom-2 left-4 text-[10px] text-slate-500 font-mono">Addr: 1000</div>
-                <div className="absolute bottom-2 right-4 text-[10px] text-slate-500 font-mono">Addr: 2000</div>
+                <div className="absolute bottom-2 left-4 text-[10px] text-muted-foreground font-mono">Addr: 1000</div>
+                <div className="absolute bottom-2 right-4 text-[10px] text-muted-foreground font-mono">Addr: 2000</div>
             </div>
 
             <div className="text-center">
-                <div className="mb-4 text-sm font-mono text-purple-300 bg-black/30 p-2 rounded inline-block">
+                <div className="mb-4 text-sm font-mono text-purple-600 dark:text-purple-300 bg-muted p-2 rounded inline-block">
                     ptr = realloc(ptr, {size + 1} * sizeof(int));
                 </div>
                 <div className="flex justify-center gap-4">
@@ -234,7 +235,7 @@ const ReallocSim = () => {
                         <RefreshCw size={16} />
                     </button>
                 </div>
-                <p className="mt-4 text-xs text-slate-400">{message}</p>
+                <p className="mt-4 text-xs text-muted-foreground">{message}</p>
             </div>
         </div>
     );
@@ -257,30 +258,30 @@ const DynamicArray = () => {
     };
 
     return (
-        <div className="bg-[#0f172a] p-6 rounded-xl border border-slate-700 my-8">
-            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                <List size={20} className="text-green-400" /> Dynamic Array (Vector Logic)
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <List size={20} className="text-green-500" /> Dynamic Array (Vector Logic)
             </h3>
 
             <div className="flex gap-8 mb-6">
-                <div className="bg-slate-900 p-3 rounded border border-slate-800">
-                    <span className="text-xs text-slate-500 uppercase font-bold">Size (Count)</span>
-                    <div className="text-2xl font-mono text-white">{data.length}</div>
+                <div className="bg-muted p-3 rounded border border-border">
+                    <span className="text-xs text-muted-foreground uppercase font-bold">Size (Count)</span>
+                    <div className="text-2xl font-mono text-foreground">{data.length}</div>
                 </div>
-                <div className={`bg-slate-900 p-3 rounded border transition-colors duration-500 ${highlight ? 'border-green-500 bg-green-900/20' : 'border-slate-800'}`}>
-                    <span className="text-xs text-slate-500 uppercase font-bold">Capacity (Allocated)</span>
-                    <div className={`text-2xl font-mono transition-transform ${highlight ? 'text-green-400 scale-125' : 'text-white'}`}>{capacity}</div>
+                <div className={`bg-muted p-3 rounded border transition-colors duration-500 ${highlight ? 'border-green-500 bg-green-100 dark:bg-green-900/20' : 'border-border'}`}>
+                    <span className="text-xs text-muted-foreground uppercase font-bold">Capacity (Allocated)</span>
+                    <div className={`text-2xl font-mono transition-transform ${highlight ? 'text-green-600 dark:text-green-400 scale-125' : 'text-foreground'}`}>{capacity}</div>
                 </div>
             </div>
 
-            <div className="flex gap-2 flex-wrap mb-6 p-4 bg-black/30 rounded-xl border border-slate-800 min-h-[80px] items-center">
+            <div className="flex gap-2 flex-wrap mb-6 p-4 bg-muted rounded-xl border border-border min-h-[80px] items-center">
                 {Array.from({ length: capacity }).map((_, i) => (
                     <div
                         key={i}
                         className={`w-12 h-12 rounded flex items-center justify-center font-bold text-sm border-2 transition-all duration-300
               ${i < data.length
                                 ? 'bg-blue-600 border-blue-400 text-white'
-                                : 'bg-slate-800 border-slate-700 text-slate-600 border-dashed'
+                                : 'bg-card border-border text-muted-foreground border-dashed'
                             }
             `}
                     >
@@ -297,7 +298,7 @@ const DynamicArray = () => {
                     Push Element
                 </button>
                 {highlight && (
-                    <div className="mt-4 text-green-400 text-sm font-bold animate-bounce flex items-center gap-2">
+                    <div className="mt-4 text-green-600 dark:text-green-400 text-sm font-bold animate-bounce flex items-center gap-2">
                         <RefreshCw size={16} /> Resizing! Doubling Capacity...
                     </div>
                 )}
@@ -308,17 +309,17 @@ const DynamicArray = () => {
 
 const SafetyChecklist = () => {
     return (
-        <div className="bg-[#0f172a] p-6 rounded-xl border border-slate-700 my-8">
-            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                <ShieldCheck size={20} className="text-red-400" /> The Safety Checklist
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <ShieldCheck size={20} className="text-red-500" /> The Safety Checklist
             </h3>
 
             <div className="space-y-4">
-                <div className="flex gap-4 items-start p-3 bg-red-900/10 border border-red-500/20 rounded-lg">
-                    <AlertTriangle className="text-red-400 shrink-0 mt-1" size={20} />
+                <div className="flex gap-4 items-start p-3 bg-red-50 dark:bg-red-900/10 border border-red-500/20 rounded-lg">
+                    <AlertTriangle className="text-red-500 shrink-0 mt-1" size={20} />
                     <div>
-                        <h4 className="text-red-300 font-bold text-sm">The Realloc Trap</h4>
-                        <p className="text-slate-400 text-xs mt-1">
+                        <h4 className="text-red-600 dark:text-red-300 font-bold text-sm">The Realloc Trap</h4>
+                        <p className="text-muted-foreground text-xs mt-1">
                             If <code>realloc</code> fails, it returns NULL but <strong>does not free the original block</strong>.
                             If you assign it directly back to the original pointer (<code>ptr = realloc(ptr...)</code>), you lose the address of the data and leak memory!
                         </p>
@@ -326,11 +327,11 @@ const SafetyChecklist = () => {
                     </div>
                 </div>
 
-                <div className="flex gap-4 items-start p-3 bg-blue-900/10 border border-blue-500/20 rounded-lg">
-                    <CheckCircle className="text-blue-400 shrink-0 mt-1" size={20} />
+                <div className="flex gap-4 items-start p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-500/20 rounded-lg">
+                    <CheckCircle className="text-blue-500 shrink-0 mt-1" size={20} />
                     <div>
-                        <h4 className="text-blue-300 font-bold text-sm">Always Check NULL</h4>
-                        <p className="text-slate-400 text-xs mt-1">
+                        <h4 className="text-blue-600 dark:text-blue-300 font-bold text-sm">Always Check NULL</h4>
+                        <p className="text-muted-foreground text-xs mt-1">
                             <code>malloc</code> and <code>calloc</code> can fail if the system is out of RAM. Always check if the returned pointer is NULL before using it.
                         </p>
                     </div>
@@ -344,16 +345,19 @@ const SafetyChecklist = () => {
 
 export default function Lecture5Page() {
     return (
-        <div className="min-h-screen bg-[#020617] text-slate-200 font-sans pb-32">
+        <div className="min-h-screen bg-background text-foreground font-sans pb-32 transition-colors duration-300">
 
             {/* HEADER */}
-            <header className="fixed top-0 left-0 right-0 h-16 bg-[#020617]/90 backdrop-blur-md border-b border-slate-800 z-50 flex items-center justify-between px-6 md:px-12">
+            <header className="fixed top-0 left-0 right-0 h-16 bg-background/90 backdrop-blur-md border-b border-border z-50 flex items-center justify-between px-6 md:px-12">
                 <div className="flex items-center gap-3">
-                    <img src="/cunits/logo.png" alt="C-Units Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-900/20" />
+                    <img src="/cunits/logo.png" alt="C-Units Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-500/20" />
                     <div className="hidden md:block">
-                        <h1 className="font-bold text-white text-sm leading-tight">Advanced Allocation</h1>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-widest">Unit 5 • Lecture 5</p>
+                        <h1 className="font-bold text-foreground text-sm leading-tight">Advanced Allocation</h1>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Unit 5 • Lecture 5</p>
                     </div>
+                </div>
+                <div className="flex items-center gap-4">
+                    <ModeToggle />
                 </div>
             </header>
 
@@ -361,13 +365,13 @@ export default function Lecture5Page() {
 
                 {/* HERO */}
                 <div className="text-center space-y-6">
-                    <div className="inline-flex items-center gap-2 bg-purple-900/20 border border-purple-500/30 text-purple-300 px-4 py-1.5 rounded-full text-xs font-bold animate-fade-in-up">
+                    <div className="inline-flex items-center gap-2 bg-purple-100 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-500/30 text-purple-600 dark:text-purple-300 px-4 py-1.5 rounded-full text-xs font-bold animate-fade-in-up">
                         <RefreshCw size={14} /> Dynamic Resizing
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight">
-                        Memory That <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-white">Grows</span>
+                    <h1 className="text-5xl md:text-7xl font-extrabold text-foreground tracking-tight">
+                        Memory That <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-foreground dark:from-purple-400 dark:via-pink-400 dark:to-white">Grows</span>
                     </h1>
-                    <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
                         Arrays are fixed, but the real world is dynamic. Learn to resize memory on the fly using <code>realloc</code>, build dynamic arrays, and manage complex allocation safely.
                     </p>
                 </div>
@@ -377,7 +381,7 @@ export default function Lecture5Page() {
                     <SectionHeader title="Clean Allocation (calloc)" icon={Layers} color="green" />
                     <TheoryCard title="Contiguous Allocation" variant="green">
                         <p className="mb-2"><code>calloc</code> stands for "Contiguous Allocation".</p>
-                        <ul className="list-disc pl-4 space-y-1 text-sm text-slate-300">
+                        <ul className="list-disc pl-4 space-y-1 text-sm text-muted-foreground">
                             <li><strong>Args:</strong> Takes 2 arguments: number of items, size of each item.</li>
                             <li><strong>Zero-Init:</strong> Unlike <code>malloc</code>, it initializes all bytes to 0.</li>
                             <li><strong>Use Case:</strong> Arrays, Matrices, or anytime you need a clean slate.</li>
@@ -389,7 +393,7 @@ export default function Lecture5Page() {
                 {/* SECTION 2: REALLOC */}
                 <section>
                     <SectionHeader title="Resizing Memory (realloc)" icon={RefreshCw} color="purple" />
-                    <p className="text-slate-400 mb-8">
+                    <p className="text-muted-foreground mb-8">
                         What if <code>malloc</code> wasn't enough? <code>realloc</code> attempts to resize the memory block.
                         If it can't extend it, it moves the whole block to a new address.
                     </p>
@@ -400,7 +404,7 @@ export default function Lecture5Page() {
                 <section>
                     <SectionHeader title="Building a Dynamic Array" icon={List} color="blue" />
                     <TheoryCard title="The Logic Behind Vectors" variant="blue">
-                        <p className="text-sm text-slate-300">
+                        <p className="text-sm text-muted-foreground">
                             This is how <code>std::vector</code> in C++ or <code>ArrayList</code> in Java works internally.
                             <br /><br />
                             1. Track <strong>Size</strong> (elements used) and <strong>Capacity</strong> (total allocated).
@@ -420,7 +424,7 @@ export default function Lecture5Page() {
             </main>
 
             {/* FOOTER */}
-            <footer className="mt-32 border-t border-slate-800 bg-[#020617] py-12 text-center text-slate-600 text-sm">
+            <footer className="mt-32 border-t border-border bg-background py-12 text-center text-muted-foreground text-sm">
                 <p>C Programming Course • Unit 5 • Lecture 5</p>
             </footer>
         </div>
