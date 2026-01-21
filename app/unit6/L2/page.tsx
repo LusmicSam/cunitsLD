@@ -2,22 +2,21 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Box,
-    Layers,
-    LayoutTemplate,
-    Settings,
     Database,
+    Layers,
     ArrowRight,
-    CheckCircle,
-    AlertTriangle,
-    Component,
-    Maximize,
-    Minimize,
-    RefreshCw,
-    ClipboardList,
-    Copy,
-    FileText,
-    AlignLeft
+    Code,
+    Box,
+    MapPin,
+    Users,
+    MousePointer,
+    Link,
+    List,
+    ArrowLeftRight,
+    Minimize2,
+    Cpu,
+    FileDigit,
+    AlertTriangle
 } from 'lucide-react';
 import { ModeToggle } from '@/components/theme-toggle';
 
@@ -72,114 +71,126 @@ const TheoryCard = ({ title, children, variant = 'blue' }: { title: string, chil
 
 // --- INTERACTIVE COMPONENTS ---
 
-const BlueprintStudio = () => {
-    const [instances, setInstances] = useState<{ name: string, id: number }[]>([]);
-
-    const addInstance = () => {
-        setInstances([...instances, { name: `s${instances.length + 1}`, id: Date.now() }]);
-    };
-
-    return (
-        <div className="bg-card p-6 rounded-xl border border-border my-8">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <LayoutTemplate size={20} className="text-blue-500" /> The Blueprint Analogy
-            </h3>
-
-            <div className="flex flex-col md:flex-row gap-12 items-center">
-                {/* The Blueprint */}
-                <div className="w-full md:w-1/3 space-y-4">
-                    <div className="bg-blue-50 dark:bg-blue-900/10 border-2 border-blue-500 border-dashed p-6 rounded-xl relative">
-                        <div className="absolute -top-3 left-4 bg-background px-2 text-blue-500 font-bold text-xs uppercase">Struct Definition</div>
-                        <code className="text-sm font-mono text-blue-600 dark:text-blue-200 block">
-                            struct Student {'{'}<br />
-                            &nbsp;&nbsp;int id;<br />
-                            &nbsp;&nbsp;char name[20];<br />
-                            &nbsp;&nbsp;float marks;<br />
-                            {'}'};
-                        </code>
-                        <div className="mt-4 text-[10px] text-muted-foreground text-center">
-                            Consumes <strong>0 bytes</strong> of memory! It's just a plan.
-                        </div>
-                    </div>
-
-                    <button
-                        onClick={addInstance}
-                        className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-all active:scale-95"
-                    >
-                        <Component size={18} /> Build Instance (Alloc Memory)
-                    </button>
-                </div>
-
-                {/* The Instances */}
-                <div className="flex-1 bg-muted rounded-xl border border-border p-4 min-h-[200px] w-full">
-                    <div className="text-xs font-bold text-muted-foreground uppercase mb-4">RAM (Stack Memory)</div>
-                    <div className="flex flex-wrap gap-4">
-                        {instances.map((inst) => (
-                            <div key={inst.id} className="bg-card border border-border p-3 rounded-lg w-32 shadow-lg animate-in zoom-in duration-300">
-                                <div className="text-xs text-orange-500 font-bold mb-2">struct Student {inst.name}</div>
-                                <div className="space-y-1">
-                                    <div className="h-4 bg-muted-foreground/20 rounded w-full flex items-center px-1 text-[8px] text-muted-foreground">id</div>
-                                    <div className="h-4 bg-muted-foreground/20 rounded w-3/4 flex items-center px-1 text-[8px] text-muted-foreground">name</div>
-                                    <div className="h-4 bg-muted-foreground/20 rounded w-1/2 flex items-center px-1 text-[8px] text-muted-foreground">marks</div>
-                                </div>
-                                <div className="mt-2 text-[9px] text-muted-foreground text-right">Size: 28B</div>
-                            </div>
-                        ))}
-                        {instances.length === 0 && (
-                            <div className="w-full text-center text-muted-foreground italic py-10">
-                                No memory allocated yet. Click the button to create variables.
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const InitializationLab = () => {
-    const [method, setMethod] = useState<'standard' | 'designated'>('standard');
+const ArrayOfStructs = () => {
+    const [students, setStudents] = useState([
+        { id: 101, name: "Alice", marks: 85 },
+        { id: 102, name: "Bob", marks: 92 },
+        { id: 103, name: "Charlie", marks: 78 }
+    ]);
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <ClipboardList size={20} className="text-green-500" /> Filling the Form (Initialization)
+                <Users size={20} className="text-blue-500" /> Array of Structures
             </h3>
 
-            <div className="flex gap-4 mb-8">
-                <button
-                    onClick={() => setMethod('standard')}
-                    className={`flex-1 p-3 rounded-lg font-bold text-sm border transition-all ${method === 'standard' ? 'bg-green-600 border-green-400 text-white' : 'bg-muted border-border text-muted-foreground'}`}
-                >
-                    Standard (Order Matters)
-                </button>
-                <button
-                    onClick={() => setMethod('designated')}
-                    className={`flex-1 p-3 rounded-lg font-bold text-sm border transition-all ${method === 'designated' ? 'bg-purple-600 border-purple-400 text-white' : 'bg-muted border-border text-muted-foreground'}`}
-                >
-                    Designated (C99 Style)
-                </button>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="grid md:grid-cols-2 gap-8 items-start">
                 <div>
-                    {method === 'standard' ? (
-                        <CodeBlock title="Traditional Way" code={'struct Point p = {10, 20};\n// 10 goes to 1st member\n// 20 goes to 2nd member'} />
-                    ) : (
-                        <CodeBlock title="Modern Way (C99+)" code={'struct Point p = {\n  .y = 20,\n  .x = 10\n};\n// Order doesn\'t matter!'} />
-                    )}
+                    <TheoryCard title="The Concept" variant="blue">
+                        <p>
+                            Just like <code>int arr[10]</code> creates 10 integers,
+                            <code>struct Student list[3]</code> creates 3 distinct Student structures in contiguous memory.
+                        </p>
+                    </TheoryCard>
+
+                    <CodeBlock title="Declaration" code={'struct Student list[3] = {\n  {101, "Alice", 85},\n  {102, "Bob", 92},\n  {103, "Charlie", 78}\n};'} />
+
+                    <div className="mt-4 p-4 bg-muted rounded-xl border border-border">
+                        <div className="text-xs text-muted-foreground uppercase font-bold mb-2">Access Pattern</div>
+                        <code className="text-sm font-mono text-green-600 dark:text-green-400">
+                            list[{activeIndex !== null ? activeIndex : 'i'}].name
+                        </code>
+                    </div>
                 </div>
 
-                <div className="bg-black p-6 rounded-xl border border-slate-800 relative">
-                    <div className="absolute top-2 right-2 text-xs text-slate-500 font-bold uppercase">Memory</div>
-                    <div className="space-y-2 font-mono">
-                        <div className="flex justify-between items-center bg-slate-900 p-2 rounded border border-slate-700">
-                            <span className="text-blue-400">p.x</span>
-                            <span className="text-white text-xl font-bold">10</span>
+                <div className="space-y-2">
+                    <div className="text-xs text-muted-foreground font-bold uppercase text-center mb-2">Memory View (Contiguous)</div>
+                    {students.map((s, i) => (
+                        <div
+                            key={s.id}
+                            className={`flex items-center p-3 rounded-lg border-2 transition-all cursor-pointer
+                 ${activeIndex === i ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 scale-105' : 'bg-muted border-border hover:border-muted-foreground/50'}
+               `}
+                            onMouseEnter={() => setActiveIndex(i)}
+                            onMouseLeave={() => setActiveIndex(null)}
+                        >
+                            <div className="w-8 h-8 rounded bg-card flex items-center justify-center font-bold text-muted-foreground mr-4 border border-border">
+                                {i}
+                            </div>
+                            <div className="flex-1 grid grid-cols-3 gap-2 text-sm font-mono">
+                                <div className="text-orange-500">ID: {s.id}</div>
+                                <div className="text-foreground">"{s.name}"</div>
+                                <div className="text-green-600 dark:text-green-400">{s.marks}</div>
+                            </div>
                         </div>
-                        <div className="flex justify-between items-center bg-slate-900 p-2 rounded border border-slate-700">
-                            <span className="text-purple-400">p.y</span>
-                            <span className="text-white text-xl font-bold">20</span>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const NestedStructs = () => {
+    const [hover, setHover] = useState<'outer' | 'inner' | null>(null);
+
+    return (
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <Box size={20} className="text-purple-500" /> Nested Structures
+            </h3>
+
+            <div className="grid md:grid-cols-2 gap-12">
+                <div className="relative p-8 border-4 border-muted rounded-xl bg-card" onMouseEnter={() => setHover('outer')} onMouseLeave={() => setHover(null)}>
+                    <div className={`absolute top-0 left-0 bg-muted px-3 py-1 rounded-br-xl text-xs font-bold uppercase transition-colors ${hover === 'outer' ? 'text-purple-500' : 'text-muted-foreground'}`}>
+                        struct Employee
+                    </div>
+
+                    <div className="space-y-4 mt-4">
+                        <div className="p-3 bg-muted/50 rounded border border-border flex justify-between">
+                            <span className="text-muted-foreground text-sm">char name[]</span>
+                            <span className="text-foreground font-mono">"John"</span>
+                        </div>
+                        <div className="p-3 bg-muted/50 rounded border border-border flex justify-between">
+                            <span className="text-muted-foreground text-sm">float salary</span>
+                            <span className="text-foreground font-mono">50000.0</span>
+                        </div>
+
+                        {/* Inner Struct */}
+                        <div
+                            className={`p-4 border-2 rounded-xl bg-muted/20 transition-colors ${hover === 'inner' ? 'border-orange-500' : 'border-border'}`}
+                            onMouseEnter={(e) => { e.stopPropagation(); setHover('inner'); }}
+                            onMouseLeave={() => setHover('outer')}
+                        >
+                            <div className={`text-xs font-bold uppercase mb-2 ${hover === 'inner' ? 'text-orange-500' : 'text-muted-foreground'}`}>
+                                struct Address addr
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-xs">
+                                    <span className="text-muted-foreground">char city[]</span>
+                                    <span className="text-orange-500 dark:text-orange-200">"NY"</span>
+                                </div>
+                                <div className="flex justify-between text-xs">
+                                    <span className="text-muted-foreground">int pin</span>
+                                    <span className="text-orange-500 dark:text-orange-200">10001</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col justify-center gap-4">
+                    <TheoryCard title="Box inside a Box" variant="purple">
+                        <p>You can define a structure as a member of another structure.</p>
+                    </TheoryCard>
+
+                    <div className="bg-black/5 dark:bg-black/40 p-4 rounded-xl border border-border">
+                        <div className="text-xs text-muted-foreground font-bold uppercase mb-2">Accessing Nested Members</div>
+                        <div className="font-mono text-lg text-foreground">
+                            emp.<span className={`transition-colors ${hover === 'inner' ? 'text-orange-500' : 'text-muted-foreground'}`}>addr</span>.city
+                        </div>
+                        <div className="mt-2 text-xs text-muted-foreground">
+                            Use multiple dot operators to drill down.
                         </div>
                     </div>
                 </div>
@@ -188,171 +199,73 @@ const InitializationLab = () => {
     );
 };
 
-const DotOperatorLab = () => {
-    const [p1, setP1] = useState({ x: 10, y: 20 });
-    const [activeField, setActiveField] = useState<'x' | 'y' | null>(null);
+const ArrowOperator = () => {
+    const [notation, setNotation] = useState<'dot' | 'arrow'>('arrow');
 
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Settings size={20} className="text-green-500" /> Member Access (Dot Operator)
+                <MousePointer size={20} className="text-green-500" /> Pointers to Structures
             </h3>
+
+            <div className="flex gap-4 mb-8 justify-center">
+                <button
+                    onClick={() => setNotation('dot')}
+                    className={`px-4 py-2 rounded-full font-bold text-sm transition-all ${notation === 'dot' ? 'bg-slate-700 text-white' : 'bg-muted text-muted-foreground'}`}
+                >
+                    Dot Syntax (*p).x
+                </button>
+                <button
+                    onClick={() => setNotation('arrow')}
+                    className={`px-4 py-2 rounded-full font-bold text-sm transition-all ${notation === 'arrow' ? 'bg-green-600 text-white' : 'bg-muted text-muted-foreground'}`}
+                >
+                    Arrow Syntax p-&gt;x
+                </button>
+            </div>
 
             <div className="grid md:grid-cols-2 gap-12 items-center">
-                {/* Code Control */}
-                <div className="space-y-6">
-                    <div className="bg-muted p-4 rounded-xl border border-border">
-                        <div className="text-xs font-bold text-muted-foreground uppercase mb-2">struct Point p1;</div>
-
-                        <div className="space-y-4">
-                            <div
-                                className={`flex items-center gap-4 p-2 rounded transition-all ${activeField === 'x' ? 'bg-green-100 dark:bg-green-900/30 ring-1 ring-green-500' : 'hover:bg-card'}`}
-                                onMouseEnter={() => setActiveField('x')}
-                                onMouseLeave={() => setActiveField(null)}
-                            >
-                                <code className="text-sm font-mono text-foreground">p1.x = </code>
-                                <input
-                                    type="number" value={p1.x} onChange={e => setP1({ ...p1, x: Number(e.target.value) })}
-                                    className="bg-background border border-border rounded px-2 py-1 text-green-500 font-bold w-20 text-center"
-                                />
-                                <span className="text-muted-foreground text-xs">// Access member x</span>
-                            </div>
-
-                            <div
-                                className={`flex items-center gap-4 p-2 rounded transition-all ${activeField === 'y' ? 'bg-green-100 dark:bg-green-900/30 ring-1 ring-green-500' : 'hover:bg-card'}`}
-                                onMouseEnter={() => setActiveField('y')}
-                                onMouseLeave={() => setActiveField(null)}
-                            >
-                                <code className="text-sm font-mono text-foreground">p1.y = </code>
-                                <input
-                                    type="number" value={p1.y} onChange={e => setP1({ ...p1, y: Number(e.target.value) })}
-                                    className="bg-background border border-border rounded px-2 py-1 text-green-500 font-bold w-20 text-center"
-                                />
-                                <span className="text-muted-foreground text-xs">// Access member y</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Visual Object */}
                 <div className="relative">
-                    <div className="bg-muted rounded-xl p-8 border-2 border-border shadow-2xl relative w-48 mx-auto">
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-popover px-3 text-xs text-muted-foreground font-bold uppercase border border-border rounded-full">
-                            Variable p1
-                        </div>
+                    {/* Pointer */}
+                    <div className="absolute top-0 left-0 bg-blue-100 dark:bg-blue-900/30 border border-blue-500 p-2 rounded text-center w-24">
+                        <div className="text-[10px] text-blue-600 dark:text-blue-300 font-bold">struct Point *p</div>
+                        <div className="text-sm font-mono text-foreground">0x500</div>
+                    </div>
 
-                        <div className="space-y-4">
-                            <div className={`p-3 bg-card rounded border transition-colors ${activeField === 'x' ? 'border-green-500' : 'border-border'}`}>
-                                <div className="text-[10px] text-muted-foreground uppercase font-bold">int x</div>
-                                <div className="text-2xl text-foreground font-mono">{p1.x}</div>
+                    {/* Arrow SVG */}
+                    <svg className="absolute top-8 left-12 w-24 h-24 pointer-events-none">
+                        <path d="M 12 0 Q 12 50 80 80" fill="none" stroke="#4ade80" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#4ade80" />
+                            </marker>
+                        </defs>
+                    </svg>
+
+                    {/* Struct */}
+                    <div className="mt-24 ml-24 bg-muted p-4 rounded-xl border-2 border-border w-40">
+                        <div className="text-[10px] text-muted-foreground font-bold uppercase mb-2 text-center">Address: 0x500</div>
+                        <div className="space-y-2">
+                            <div className="flex justify-between text-sm border-b border-border pb-1">
+                                <span className="text-muted-foreground">x</span> <span className="text-foreground">10</span>
                             </div>
-                            <div className={`p-3 bg-card rounded border transition-colors ${activeField === 'y' ? 'border-green-500' : 'border-border'}`}>
-                                <div className="text-[10px] text-muted-foreground uppercase font-bold">int y</div>
-                                <div className="text-2xl text-foreground font-mono">{p1.y}</div>
+                            <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">y</span> <span className="text-foreground">20</span>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    );
-};
 
-const StructLayoutLab = () => {
-    const [layout, setLayout] = useState<'naive' | 'optimized'>('naive');
-
-    // Naive: char (1) + pad(7) + double(8) + int(4) + pad(4) = 24 bytes
-    const naiveBlocks = [
-        { type: 'char', size: 1, color: 'bg-blue-500' },
-        { type: 'pad', size: 7, color: 'bg-slate-700 opacity-50' },
-        { type: 'double', size: 8, color: 'bg-green-500' },
-        { type: 'int', size: 4, color: 'bg-purple-500' },
-        { type: 'pad', size: 4, color: 'bg-slate-700 opacity-50' },
-    ];
-
-    // Optimized: double(8) + int(4) + char(1) + pad(3) = 16 bytes
-    const optimizedBlocks = [
-        { type: 'double', size: 8, color: 'bg-green-500' },
-        { type: 'int', size: 4, color: 'bg-purple-500' },
-        { type: 'char', size: 1, color: 'bg-blue-500' },
-        { type: 'pad', size: 3, color: 'bg-slate-700 opacity-50' },
-    ];
-
-    const blocks = layout === 'naive' ? naiveBlocks : optimizedBlocks;
-    const totalSize = blocks.reduce((acc, b) => acc + b.size, 0);
-
-    return (
-        <div className="bg-card p-6 rounded-xl border border-border my-8">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Database size={20} className="text-orange-500" /> Padding & Layout Optimizer
-            </h3>
-
-            <div className="flex flex-col md:flex-row gap-8 items-start">
-                <div className="w-full md:w-1/3 space-y-4">
-                    <div className="bg-muted p-4 rounded-xl border border-border">
-                        <div className="text-xs text-muted-foreground uppercase font-bold mb-2">Members</div>
-                        <div className="space-y-2 font-mono text-sm">
-                            <div className="text-blue-500">char c;   // 1 Byte</div>
-                            <div className="text-green-500">double d; // 8 Bytes</div>
-                            <div className="text-purple-500">int i;    // 4 Bytes</div>
+                <div>
+                    <div className="bg-black/5 dark:bg-black/40 p-6 rounded-xl border border-border text-center">
+                        <div className="text-xs text-muted-foreground font-bold uppercase mb-4">Code Representation</div>
+                        <div className="text-2xl font-mono text-green-600 dark:text-green-400 font-bold">
+                            {notation === 'dot' ? "(*p).x" : "p->x"}
                         </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setLayout('naive')}
-                            className={`flex-1 py-2 rounded text-xs font-bold border transition-all ${layout === 'naive' ? 'bg-red-100 dark:bg-red-900/30 border-red-500 text-red-600 dark:text-red-300' : 'bg-muted border-border text-muted-foreground'}`}
-                        >
-                            Naive Order
-                        </button>
-                        <button
-                            onClick={() => setLayout('optimized')}
-                            className={`flex-1 py-2 rounded text-xs font-bold border transition-all ${layout === 'optimized' ? 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-600 dark:text-green-300' : 'bg-muted border-border text-muted-foreground'}`}
-                        >
-                            Optimized Order
-                        </button>
-                    </div>
-
-                    <div className={`p-3 rounded-lg border text-center ${layout === 'optimized' ? 'border-green-500 text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/10' : 'border-red-500 text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/10'}`}>
-                        <div className="text-[10px] uppercase font-bold mb-1">Total Size</div>
-                        <div className="text-2xl font-black">{totalSize} Bytes</div>
-                        <div className="text-[10px] opacity-70 mt-1">{layout === 'naive' ? "Wasted: 11 Bytes" : "Wasted: 3 Bytes"}</div>
-                    </div>
-                </div>
-
-                <div className="flex-1 bg-black/5 dark:bg-black/40 p-6 rounded-xl border border-border">
-                    <div className="text-xs text-muted-foreground uppercase font-bold mb-4 text-center">Memory Map (1 Block = 1 Byte)</div>
-
-                    <div className="flex flex-wrap gap-1 max-w-[400px] mx-auto">
-                        {blocks.map((b, i) => (
-                            <React.Fragment key={i}>
-                                {Array.from({ length: b.size }).map((_, j) => (
-                                    <div
-                                        key={`${i}-${j}`}
-                                        className={`w-8 h-8 rounded border border-black/20 flex items-center justify-center text-[8px] font-bold text-white shadow-sm hover:scale-110 transition-transform cursor-help ${b.color}`}
-                                        title={`${b.type} (Byte ${j + 1})`}
-                                    >
-                                        {b.type === 'pad' ? 'X' : b.type[0].toUpperCase()}
-                                    </div>
-                                ))}
-                            </React.Fragment>
-                        ))}
-                    </div>
-
-                    <div className="mt-6 text-xs text-muted-foreground leading-relaxed bg-muted p-3 rounded border border-border">
-                        {layout === 'naive' ? (
-                            <span>
-                                <strong>Why so big?</strong> double d requires 8-byte alignment.
-                                It can't start at offset 1 (after char), so the CPU inserts <strong>7 padding bytes</strong>.
-                                Total size must also align to 8, adding 4 more bytes at the end.
-                            </span>
-                        ) : (
-                            <span>
-                                <strong>Why efficient?</strong> By placing the largest member (double) first, we satisfy alignment immediately.
-                                int fits perfectly after double. char fits after int.
-                                Only minimal padding (3 bytes) is needed at the end to align the total size.
-                            </span>
-                        )}
+                        <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+                            {notation === 'dot'
+                                ? "We must dereference (*) first, then use dot (.). Parentheses are mandatory due to precedence!"
+                                : "The arrow operator (->) automatically dereferences the pointer and accesses the member. Much cleaner!"}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -360,85 +273,155 @@ const StructLayoutLab = () => {
     );
 };
 
-const AssignmentDemo = () => {
-    const [s1, setS1] = useState(10);
-    const [s2, setS2] = useState(0);
-
-    const copy = () => {
-        setS2(s1);
-    };
+const FunctionStructs = () => {
+    const [mode, setMode] = useState<'value' | 'ref'>('value');
 
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Copy size={20} className="text-pink-500" /> Structure Assignment (Cloning)
+                <ArrowLeftRight size={20} className="text-red-500" /> Functions & Efficiency
             </h3>
 
-            <div className="grid md:grid-cols-3 gap-4 items-center">
-                {/* Source */}
-                <div className="bg-muted p-4 rounded-xl border border-border text-center">
-                    <div className="text-xs text-muted-foreground uppercase font-bold mb-2">struct Data s1</div>
-                    <input
-                        type="number" value={s1} onChange={e => setS1(Number(e.target.value))}
-                        className="bg-background border border-border rounded p-2 text-center text-foreground text-xl font-bold w-24"
-                    />
-                </div>
-
-                {/* Action */}
-                <div className="flex flex-col items-center">
-                    <button
-                        onClick={copy}
-                        className="bg-pink-600 hover:bg-pink-500 text-white px-6 py-2 rounded-full font-bold shadow-lg active:scale-95 transition-transform"
-                    >
-                        s2 = s1;
-                    </button>
-                    <span className="text-[10px] text-muted-foreground mt-2">Copies all members automatically</span>
-                </div>
-
-                {/* Dest */}
-                <div className="bg-muted p-4 rounded-xl border border-border text-center">
-                    <div className="text-xs text-muted-foreground uppercase font-bold mb-2">struct Data s2</div>
-                    <div className={`text-xl font-bold p-2 ${s2 === s1 ? 'text-green-500 animate-pulse' : 'text-muted-foreground'}`}>
-                        {s2}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const TypedefTransform = () => {
-    const [transformed, setTransformed] = useState(false);
-
-    return (
-        <div className="bg-card p-6 rounded-xl border border-border my-8">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <RefreshCw size={20} className="text-purple-500" /> The Typedef Shortcut
-            </h3>
-
-            <div className="flex flex-col items-center gap-6">
+            <div className="flex justify-center gap-4 mb-8">
                 <button
-                    onClick={() => setTransformed(!transformed)}
-                    className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2 rounded-full font-bold text-sm flex items-center gap-2"
+                    onClick={() => setMode('value')}
+                    className={`px-6 py-2 rounded-lg font-bold text-sm transition-all border-2 ${mode === 'value' ? 'bg-red-100 dark:bg-red-900/30 border-red-500 text-red-600 dark:text-white' : 'bg-muted border-border text-muted-foreground'}`}
                 >
-                    {transformed ? <Minimize size={16} /> : <Maximize size={16} />}
-                    {transformed ? "Show Original" : "Apply typedef"}
+                    Pass by Value (Copy)
                 </button>
+                <button
+                    onClick={() => setMode('ref')}
+                    className={`px-6 py-2 rounded-lg font-bold text-sm transition-all border-2 ${mode === 'ref' ? 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-600 dark:text-white' : 'bg-muted border-border text-muted-foreground'}`}
+                >
+                    Pass by Reference (Ptr)
+                </button>
+            </div>
 
-                <div className="grid md:grid-cols-2 gap-8 w-full">
-                    <div className={`p-4 rounded-xl border transition-all duration-500 ${!transformed ? 'bg-muted border-border opacity-100' : 'bg-muted border-border opacity-50'}`}>
-                        <div className="text-xs text-muted-foreground uppercase font-bold mb-2">Without Typedef</div>
-                        <code className="text-sm text-foreground block mb-2">struct Student s1;</code>
-                        <code className="text-sm text-foreground block">void print(struct Student s);</code>
-                        <div className="mt-4 text-xs text-red-400">Must type 'struct' everywhere.</div>
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <CodeBlock
+                        title={mode === 'value' ? "Inefficient Code" : "Optimized Code"}
+                        code={mode === 'value'
+                            ? 'void print(struct BigData d) {\n  // Receives a massive COPY\n  // Uses 1000 bytes stack\n}'
+                            : 'void print(struct BigData *d) {\n  // Receives just an ADDRESS\n  // Uses 8 bytes stack\n}'}
+                    />
+                    <div className="mt-4 p-4 rounded-xl border border-border bg-muted text-sm text-muted-foreground">
+                        {mode === 'value'
+                            ? "Passing by value copies every single member. If the struct is large (e.g., images), this crashes the stack!"
+                            : "Passing by pointer is instant. Only the address (8 bytes) is copied, regardless of the struct size."}
+                    </div>
+                </div>
+
+                {/* Visualizer */}
+                <div className="relative h-48 bg-black/5 dark:bg-black/40 rounded-xl border border-border flex items-center justify-center overflow-hidden">
+                    <div className="absolute top-2 left-2 text-[10px] text-muted-foreground uppercase font-bold">Stack Frame Visualization</div>
+
+                    {mode === 'value' ? (
+                        <div className="w-48 h-32 bg-red-500 animate-pulse rounded flex items-center justify-center text-white font-bold shadow-2xl">
+                            HUGE COPY (1KB)
+                        </div>
+                    ) : (
+                        <div className="w-16 h-8 bg-green-500 rounded flex items-center justify-center text-white font-bold shadow-2xl animate-in zoom-in">
+                            PTR (8B)
+                        </div>
+                    )}
+
+                    {mode === 'value' && <div className="absolute bottom-2 text-xs text-red-500 font-bold flex items-center gap-1"><AlertTriangle size={12} /> High Memory Usage</div>}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const BitFieldsLab = () => {
+    return (
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <Minimize2 size={20} className="text-yellow-500" /> Bit Fields (Memory Packing)
+            </h3>
+
+            <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                    <TheoryCard title="The Problem" variant="yellow">
+                        <p className="text-sm">
+                            Normally, an <code>int</code> takes 4 bytes (32 bits). But what if you only need to store a number from 0-31? That only needs 5 bits.
+                            The rest is wasted.
+                        </p>
+                    </TheoryCard>
+                    <CodeBlock title="Struct with Bit Fields" code={'struct Date {\n  unsigned int day : 5;   // 0-31\n  unsigned int month : 4; // 0-15\n  unsigned int year : 11; // 0-2047\n};'} />
+                </div>
+
+                <div className="flex flex-col justify-center">
+                    <div className="bg-muted border border-border rounded-xl p-6">
+                        <div className="text-xs text-muted-foreground font-bold uppercase mb-4 text-center">32-Bit Integer Layout</div>
+
+                        <div className="flex h-16 rounded-lg overflow-hidden border-2 border-border bg-black">
+                            {/* Day */}
+                            <div className="w-[15%] bg-blue-600 flex items-center justify-center text-[10px] md:text-xs font-bold text-white border-r border-border relative group" title="5 Bits">
+                                Day
+                                <span className="absolute -bottom-6 text-[9px] bg-blue-900 px-1 rounded text-blue-200 opacity-0 group-hover:opacity-100">5 bits</span>
+                            </div>
+                            {/* Month */}
+                            <div className="w-[12%] bg-green-600 flex items-center justify-center text-[10px] md:text-xs font-bold text-white border-r border-border relative group" title="4 Bits">
+                                Mon
+                                <span className="absolute -bottom-6 text-[9px] bg-green-900 px-1 rounded text-green-200 opacity-0 group-hover:opacity-100">4 bits</span>
+                            </div>
+                            {/* Year */}
+                            <div className="w-[33%] bg-purple-600 flex items-center justify-center text-[10px] md:text-xs font-bold text-white border-r border-border relative group" title="11 Bits">
+                                Year
+                                <span className="absolute -bottom-6 text-[9px] bg-purple-900 px-1 rounded text-purple-200 opacity-0 group-hover:opacity-100">11 bits</span>
+                            </div>
+                            {/* Unused */}
+                            <div className="flex-1 bg-muted flex items-center justify-center text-[10px] text-muted-foreground pattern-diagonal-lines">
+                                Unused (12 bits)
+                            </div>
+                        </div>
+
+                        <div className="mt-8 text-center">
+                            <span className="text-sm font-bold text-foreground">Total Used: 20 Bits</span>
+                            <span className="text-xs text-muted-foreground block">Fits inside a single 4-byte integer!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const SelfReferential = () => {
+    return (
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <Link size={20} className="text-orange-500" /> Self-Referential Structures
+            </h3>
+
+            <div className="flex flex-col md:flex-row gap-8 items-center">
+                <div className="flex-1 space-y-4">
+                    <TheoryCard title="The Basis of Data Structures" variant="orange">
+                        <p>
+                            A structure cannot contain an instance of itself (infinite size!), but it CAN contain a <strong>pointer to itself</strong>.
+                            This is how Linked Lists and Trees are built.
+                        </p>
+                    </TheoryCard>
+                    <CodeBlock code={'struct Node {\n  int data;\n  struct Node *next;\n};'} />
+                </div>
+
+                <div className="flex-1 flex gap-4 items-center justify-center">
+                    {/* Node A */}
+                    <div className="bg-muted border border-orange-500/50 p-4 rounded-lg flex flex-col items-center w-24 relative">
+                        <div className="text-xs text-orange-500 font-bold mb-2">Node A</div>
+                        <div className="w-full bg-black p-1 text-center text-white mb-1 rounded text-sm">10</div>
+                        <div className="w-full bg-blue-100 dark:bg-blue-900/30 p-1 text-center text-blue-600 dark:text-blue-300 rounded text-[10px]">*next</div>
+
+                        {/* Arrow */}
+                        <div className="absolute top-1/2 -right-6 w-6 h-0.5 bg-blue-500"></div>
                     </div>
 
-                    <div className={`p-4 rounded-xl border transition-all duration-500 ${transformed ? 'bg-green-100 dark:bg-green-900/20 border-green-500 opacity-100 scale-105' : 'bg-muted border-border opacity-50'}`}>
-                        <div className="text-xs text-muted-foreground uppercase font-bold mb-2">With Typedef</div>
-                        <div className="mb-3 text-xs font-mono text-purple-600 dark:text-purple-300 bg-background p-2 rounded">typedef struct Student Student;</div>
-                        <code className="text-sm text-green-600 dark:text-green-300 block mb-2 font-bold">Student s1;</code>
-                        <code className="text-sm text-green-600 dark:text-green-300 block font-bold">void print(Student s);</code>
-                        <div className="mt-4 text-xs text-green-600 dark:text-green-400">Cleaner! Like a native type.</div>
+                    {/* Node B */}
+                    <div className="bg-muted border border-orange-500/50 p-4 rounded-lg flex flex-col items-center w-24">
+                        <div className="text-xs text-orange-500 font-bold mb-2">Node B</div>
+                        <div className="w-full bg-black p-1 text-center text-white mb-1 rounded text-sm">20</div>
+                        <div className="w-full bg-card p-1 text-center text-muted-foreground rounded text-[10px]">NULL</div>
                     </div>
                 </div>
             </div>
@@ -457,7 +440,7 @@ export default function Lecture2Page() {
                 <div className="flex items-center gap-3">
                     <img src="/cunitsLD/logo.png" alt="C-Units Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-500/20" />
                     <div className="hidden md:block">
-                        <h1 className="font-bold text-foreground text-sm leading-tight">Structures</h1>
+                        <h1 className="font-bold text-foreground text-sm leading-tight">Advanced Structures</h1>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Unit 6 • Lecture 2</p>
                     </div>
                 </div>
@@ -471,83 +454,75 @@ export default function Lecture2Page() {
                 {/* HERO */}
                 <div className="text-center space-y-6">
                     <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 px-4 py-1.5 rounded-full text-xs font-bold animate-fade-in-up">
-                        <Layers size={14} /> User Defined Types
+                        <Database size={14} /> Complex Data Types
                     </div>
                     <h1 className="text-5xl md:text-7xl font-extrabold text-foreground tracking-tight">
-                        The <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-600 to-foreground dark:from-blue-400 dark:via-cyan-400 dark:to-white">Blueprint</span> of Data
+                        Structuring the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-foreground dark:from-blue-400 dark:via-indigo-400 dark:to-white">Universe</span>
                     </h1>
                     <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                        Arrays can only hold one type of data. Structures allow you to bundle mixed data types (int, float, char) into a single, logical unit—like a <strong>Digital Form</strong>.
+                        Real-world data is complex. We need arrays of objects, objects inside objects, and pointers that link them all together.
                     </p>
                 </div>
 
-                {/* SECTION 1: DEFINITION */}
+                {/* SECTION 1: ARRAYS OF STRUCTS */}
                 <section>
-                    <SectionHeader title="Defining Structures" icon={LayoutTemplate} color="blue" />
-                    <TheoryCard title="What is a Structure?" variant="blue">
-                        <p className="mb-2">A <code>struct</code> is a collection of variables (members) under a single name.</p>
-                        <ul className="list-disc pl-4 space-y-1 text-sm text-muted-foreground">
-                            <li><strong>Analogy:</strong> Think of it as a <strong>Student ID Card</strong>. It holds a Name (string), Roll No (int), and GPA (float) all in one plastic card.</li>
-                            <li><strong>Declaration:</strong> Does not allocate memory. It just defines the shape (the template).</li>
-                            <li><strong>Instance:</strong> Allocates memory based on the definition (printing the card).</li>
-                        </ul>
-                    </TheoryCard>
-                    <BlueprintStudio />
-                </section>
-
-                {/* SECTION 2: INITIALIZATION */}
-                <section>
-                    <SectionHeader title="Filling the Form" icon={ClipboardList} color="green" />
+                    <SectionHeader title="Array of Structures" icon={List} color="blue" />
                     <p className="text-muted-foreground mb-8">
-                        Once you have a variable, you need to put data in it. C provides a few ways to do this.
+                        Why make 50 separate variables for 50 students? Create an array of structures to manage them all in one contiguous block of memory.
                     </p>
-                    <InitializationLab />
+                    <ArrayOfStructs />
                 </section>
 
-                {/* SECTION 3: ACCESSING MEMBERS */}
+                {/* SECTION 2: NESTED STRUCTS */}
                 <section>
-                    <SectionHeader title="Accessing Members" icon={Settings} color="green" />
+                    <SectionHeader title="Nested Structures" icon={Box} color="purple" />
                     <p className="text-muted-foreground mb-8">
-                        We use the <strong>Dot Operator (.)</strong> to access individual members of a structure variable. Think of it as "Opening the box to get item X".
+                        Structures can contain other structures. This allows us to build hierarchical data models (e.g., An Employee has an Address, an Address has a City).
                     </p>
-                    <DotOperatorLab />
+                    <NestedStructs />
                 </section>
 
-                {/* SECTION 4: MEMORY & PADDING */}
+                {/* SECTION 3: POINTERS TO STRUCTS */}
                 <section>
-                    <SectionHeader title="Memory Layout & Padding" icon={Database} color="orange" />
-                    <TheoryCard title="The Hidden Bytes" variant="orange">
-                        <p className="text-sm text-muted-foreground">
-                            Structure size is often <strong>larger</strong> than the sum of its members.
-                            The CPU inserts invisible "Padding" to align data to memory boundaries (e.g., multiples of 4 or 8) for speed.
-                            <br /><br />
-                            <strong>Rule 1:</strong> Members must start at an address divisible by their size.
-                            <br />
-                            <strong>Rule 2:</strong> Total size must be divisible by the largest member's size.
-                        </p>
+                    <SectionHeader title="Pointers to Structures" icon={MousePointer} color="green" />
+                    <TheoryCard title="The Arrow Operator (->)" variant="green">
+                        <p className="mb-2">When using a pointer to a structure, accessing members requires two steps: Dereference <code>*</code> and Access <code>.</code>.</p>
+                        <div className="bg-black p-2 rounded text-center mb-2">
+                            <code className="text-red-400">(*ptr).member</code>
+                        </div>
+                        <p className="mb-2">This is clumsy. C provides the arrow operator as a cleaner shorthand:</p>
+                        <div className="bg-black p-2 rounded text-center">
+                            <code className="text-green-400">ptr-&gt;member</code>
+                        </div>
                     </TheoryCard>
-                    <StructLayoutLab />
+                    <ArrowOperator />
                 </section>
 
-                {/* SECTION 5: ASSIGNMENT */}
+                {/* SECTION 4: FUNCTIONS & STRUCTS */}
                 <section>
-                    <SectionHeader title="Copying Structures" icon={Copy} color="pink" />
-                    <TheoryCard title="The Magic Copy" variant="red">
-                        <p className="text-sm text-muted-foreground">
-                            Unlike Arrays, Structures <strong>CAN</strong> be copied using the assignment operator <code>=</code>.
-                            This creates a shallow copy of all members.
-                        </p>
-                    </TheoryCard>
-                    <AssignmentDemo />
-                </section>
-
-                {/* SECTION 6: TYPEDEF */}
-                <section>
-                    <SectionHeader title="The Typedef Keyword" icon={CheckCircle} color="purple" />
+                    <SectionHeader title="Passing Structures" icon={ArrowLeftRight} color="red" />
                     <p className="text-muted-foreground mb-8">
-                        <code>typedef</code> allows us to create an alias for a type, saving us from typing <code>struct</code> every time.
+                        Efficiency matters. Copying large structures by value is slow. Using pointers (Pass by Reference) is instantaneous.
                     </p>
-                    <TypedefTransform />
+                    <FunctionStructs />
+                </section>
+
+                {/* SECTION 5: BIT FIELDS */}
+                <section>
+                    <SectionHeader title="Memory Optimization: Bit Fields" icon={Minimize2} color="yellow" />
+                    <p className="text-muted-foreground mb-8">
+                        For system programming, we often need to store data in specific numbers of bits (not bytes) to save space or match hardware registers.
+                    </p>
+                    <BitFieldsLab />
+                </section>
+
+                {/* SECTION 6: SELF REFERENTIAL */}
+                <section>
+                    <SectionHeader title="Self-Referential Structures" icon={Link} color="orange" />
+                    <p className="text-muted-foreground mb-8">
+                        The foundation of dynamic data structures (Linked Lists, Trees). A struct that holds a pointer to... another struct of the same type!
+                    </p>
+                    <SelfReferential />
                 </section>
 
             </main>

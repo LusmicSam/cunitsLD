@@ -2,24 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Type,
-    AlignLeft,
-    Scissors,
-    Copy,
-    Search,
-    Terminal,
-    AlertTriangle,
-    CheckCircle,
+    Box,
+    Layers,
+    LayoutTemplate,
+    Settings,
+    Database,
     ArrowRight,
-    MoveRight,
-    BookOpen,
-    Keyboard,
-    Scale,
-    Ruler,
-    Grid,
-    Lock,
-    XCircle,
-    Database
+    CheckCircle,
+    AlertTriangle,
+    Component,
+    Maximize,
+    Minimize,
+    RefreshCw,
+    ClipboardList,
+    Copy,
+    FileText,
+    AlignLeft
 } from 'lucide-react';
 import { ModeToggle } from '@/components/theme-toggle';
 
@@ -74,470 +72,374 @@ const TheoryCard = ({ title, children, variant = 'blue' }: { title: string, chil
 
 // --- INTERACTIVE COMPONENTS ---
 
-const StringAnatomy = () => {
-    const [str, setStr] = useState("Hello");
-    const [mode, setMode] = useState<'array' | 'pointer'>('array');
+const BlueprintStudio = () => {
+    const [instances, setInstances] = useState<{ name: string, id: number }[]>([]);
 
-    const chars = str.split('');
-    const memory = [...chars, '\\0'];
-
-    return (
-        <div className="bg-card p-6 rounded-xl border border-border my-8">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Type size={20} className="text-blue-500" /> Anatomy of a C String
-            </h3>
-
-            <div className="flex justify-between items-center mb-8">
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setMode('array')}
-                        className={`px-4 py-2 rounded-lg font-bold text-xs transition-all ${mode === 'array' ? 'bg-blue-600 text-white' : 'bg-muted text-muted-foreground'}`}
-                    >
-                        Array: char s[]
-                    </button>
-                    <button
-                        onClick={() => setMode('pointer')}
-                        className={`px-4 py-2 rounded-lg font-bold text-xs transition-all ${mode === 'pointer' ? 'bg-purple-600 text-white' : 'bg-muted text-muted-foreground'}`}
-                    >
-                        Pointer: char *s
-                    </button>
-                </div>
-                <input
-                    value={str}
-                    onChange={e => setStr(e.target.value.slice(0, 8))}
-                    className="bg-muted border border-border rounded p-2 text-foreground font-mono w-32 text-center"
-                    placeholder="Type..."
-                />
-            </div>
-
-            <div className="relative p-6 bg-muted/50 rounded-xl border border-border">
-                <div className="absolute top-2 left-2 text-[10px] font-bold uppercase text-muted-foreground">
-                    {mode === 'array' ? "Stack Memory (Editable)" : "Read-Only Data Segment"}
-                </div>
-
-                <div className="flex flex-wrap gap-2 justify-center mt-4">
-                    {memory.map((char, i) => (
-                        <div key={i} className="flex flex-col items-center gap-1 group">
-                            <div className={`w-12 h-14 flex items-center justify-center text-xl font-bold font-mono border-2 rounded-lg shadow-lg transition-colors
-                ${char === '\\0' ? 'bg-red-100 dark:bg-red-900/40 border-red-500 text-red-600 dark:text-red-300' :
-                                    mode === 'array' ? 'bg-blue-100 dark:bg-blue-900/20 border-blue-500 text-foreground' : 'bg-purple-100 dark:bg-purple-900/20 border-purple-500 text-foreground'}
-              `}>
-                                {char === ' ' ? 'SPC' : char}
-                            </div>
-                            <span className="text-[10px] text-muted-foreground font-mono">[{i}]</span>
-                        </div>
-                    ))}
-                </div>
-
-                {mode === 'pointer' && (
-                    <div className="absolute top-2 right-2">
-                        <Lock size={16} className="text-purple-500" />
-                    </div>
-                )}
-            </div>
-
-            <div className="mt-4 text-center text-xs text-muted-foreground">
-                {mode === 'array'
-                    ? "Arrays are allocated on the Stack. You can change individual characters: s[0] = 'X';"
-                    : "String literals are stored in Read-Only Memory. Trying s[0] = 'X' causes a crash!"}
-            </div>
-        </div>
-    );
-};
-
-const AssignmentLab = () => {
-    const [step, setStep] = useState<'init' | 'assign' | 'strcpy'>('init');
-
-    return (
-        <div className="bg-card p-6 rounded-xl border border-border my-8">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Copy size={20} className="text-orange-500" /> Assignment vs Copying
-            </h3>
-
-            <div className="grid md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                    <button
-                        onClick={() => setStep('init')}
-                        className={`w-full p-3 rounded-lg border text-left text-xs font-mono transition-all ${step === 'init' ? 'bg-muted border-foreground' : 'bg-card border-border opacity-60'}`}
-                    >
-                        char s[10] = "Hi";
-                    </button>
-
-                    <button
-                        onClick={() => setStep('assign')}
-                        className={`w-full p-3 rounded-lg border text-left text-xs font-mono transition-all ${step === 'assign' ? 'bg-red-100 dark:bg-red-900/20 border-red-500 text-red-600 dark:text-red-300' : 'bg-card border-border opacity-60'}`}
-                    >
-                        s = "Bye"; // ERROR
-                    </button>
-
-                    <button
-                        onClick={() => setStep('strcpy')}
-                        className={`w-full p-3 rounded-lg border text-left text-xs font-mono transition-all ${step === 'strcpy' ? 'bg-green-100 dark:bg-green-900/20 border-green-500 text-green-600 dark:text-green-300' : 'bg-card border-border opacity-60'}`}
-                    >
-                        strcpy(s, "Bye"); // CORRECT
-                    </button>
-                </div>
-
-                <div className="flex items-center justify-center bg-black/5 dark:bg-black/40 rounded-xl border border-border relative overflow-hidden h-48">
-                    {step === 'init' && (
-                        <div className="text-center animate-in zoom-in">
-                            <div className="text-4xl font-mono text-foreground mb-2">"Hi\0"</div>
-                            <div className="text-xs text-muted-foreground">Initialized on Stack</div>
-                        </div>
-                    )}
-
-                    {step === 'assign' && (
-                        <div className="text-center animate-in shake">
-                            <XCircle size={48} className="text-red-500 mx-auto mb-2" />
-                            <div className="text-lg font-bold text-red-500">Compilation Error</div>
-                            <p className="text-xs text-red-400 mt-2 px-4">
-                                Arrays are constant pointers. You cannot change the <i>address</i> 's' points to.
-                            </p>
-                        </div>
-                    )}
-
-                    {step === 'strcpy' && (
-                        <div className="text-center animate-in zoom-in">
-                            <div className="text-4xl font-mono text-green-500 mb-2">"Bye\0"</div>
-                            <div className="text-xs text-green-600 dark:text-green-400">Memory Overwritten Successfully</div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const SizeofTrap = () => {
-    return (
-        <div className="bg-card p-6 rounded-xl border border-border my-8">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Ruler size={20} className="text-yellow-500" /> The Sizeof Trap
-            </h3>
-
-            <div className="grid md:grid-cols-2 gap-6">
-                {/* Array Case */}
-                <div className="bg-muted p-4 rounded-xl border border-border">
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-bold text-blue-500 uppercase">Case 1: Array</span>
-                        <Database size={16} className="text-blue-500" />
-                    </div>
-                    <CodeBlock title="Code" code={'char s[10] = "Hi";'} />
-
-                    <div className="space-y-2 mt-4">
-                        <div className="flex justify-between items-center bg-card p-2 rounded border border-border">
-                            <code className="text-xs text-muted-foreground">sizeof(s)</code>
-                            <span className="font-bold text-green-500">10</span>
-                        </div>
-                        <div className="flex justify-between items-center bg-card p-2 rounded border border-border">
-                            <code className="text-xs text-muted-foreground">strlen(s)</code>
-                            <span className="font-bold text-blue-500">2</span>
-                        </div>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground mt-2">
-                        Sizeof gives the <strong>total capacity</strong> allocated.
-                    </p>
-                </div>
-
-                {/* Pointer Case */}
-                <div className="bg-muted p-4 rounded-xl border border-border">
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-bold text-purple-500 uppercase">Case 2: Pointer</span>
-                        <ArrowRight size={16} className="text-purple-500" />
-                    </div>
-                    <CodeBlock title="Code" code={'char *p = "Hi";'} />
-
-                    <div className="space-y-2 mt-4">
-                        <div className="flex justify-between items-center bg-card p-2 rounded border border-border">
-                            <code className="text-xs text-muted-foreground">sizeof(p)</code>
-                            <span className="font-bold text-yellow-500">8 (or 4)</span>
-                        </div>
-                        <div className="flex justify-between items-center bg-card p-2 rounded border border-border">
-                            <code className="text-xs text-muted-foreground">strlen(p)</code>
-                            <span className="font-bold text-blue-500">2</span>
-                        </div>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground mt-2">
-                        Sizeof gives the size of the <strong>pointer address itself</strong>.
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const LibraryBench = () => {
-    const [func, setFunc] = useState<'strlen' | 'strcpy' | 'strcat'>('strlen');
-    const [src, setSrc] = useState("World");
-    const [dest, setDest] = useState("Hello");
-    const [animating, setAnimating] = useState(false);
-
-    // Simulation State
-    const [buffer, setBuffer] = useState<string[]>([]);
-    const MAX_SIZE = 10;
-
-    useEffect(() => {
-        // Reset buffer when function changes
-        if (func === 'strcpy') setBuffer(Array(MAX_SIZE).fill('\0'));
-        if (func === 'strcat') {
-            const init = "Hi".split('');
-            const padded = [...init, ...Array(MAX_SIZE - init.length).fill('\0')];
-            setBuffer(padded);
-            setDest("Hi");
-        }
-    }, [func]);
-
-    const runSim = () => {
-        setAnimating(true);
-        setTimeout(() => setAnimating(false), 2000);
+    const addInstance = () => {
+        setInstances([...instances, { name: `s${instances.length + 1}`, id: Date.now() }]);
     };
 
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <BookOpen size={20} className="text-green-500" /> The String Library (&lt;string.h&gt;)
+                <LayoutTemplate size={20} className="text-blue-500" /> The Blueprint Analogy
             </h3>
 
-            <div className="flex gap-2 mb-8 justify-center">
-                {['strlen', 'strcpy', 'strcat'].map(f => (
+            <div className="flex flex-col md:flex-row gap-12 items-center">
+                {/* The Blueprint */}
+                <div className="w-full md:w-1/3 space-y-4">
+                    <div className="bg-blue-50 dark:bg-blue-900/10 border-2 border-blue-500 border-dashed p-6 rounded-xl relative">
+                        <div className="absolute -top-3 left-4 bg-background px-2 text-blue-500 font-bold text-xs uppercase">Struct Definition</div>
+                        <code className="text-sm font-mono text-blue-600 dark:text-blue-200 block">
+                            struct Student {'{'}<br />
+                            &nbsp;&nbsp;int id;<br />
+                            &nbsp;&nbsp;char name[20];<br />
+                            &nbsp;&nbsp;float marks;<br />
+                            {'}'};
+                        </code>
+                        <div className="mt-4 text-[10px] text-muted-foreground text-center">
+                            Consumes <strong>0 bytes</strong> of memory! It's just a plan.
+                        </div>
+                    </div>
+
                     <button
-                        key={f}
-                        onClick={() => setFunc(f as any)}
-                        className={`px-4 py-2 rounded-full font-bold text-sm transition-all font-mono ${func === f ? 'bg-green-600 text-white' : 'bg-muted text-muted-foreground hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                        onClick={addInstance}
+                        className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-all active:scale-95"
                     >
-                        {f}
+                        <Component size={18} /> Build Instance (Alloc Memory)
                     </button>
-                ))}
+                </div>
+
+                {/* The Instances */}
+                <div className="flex-1 bg-muted rounded-xl border border-border p-4 min-h-[200px] w-full">
+                    <div className="text-xs font-bold text-muted-foreground uppercase mb-4">RAM (Stack Memory)</div>
+                    <div className="flex flex-wrap gap-4">
+                        {instances.map((inst) => (
+                            <div key={inst.id} className="bg-card border border-border p-3 rounded-lg w-32 shadow-lg animate-in zoom-in duration-300">
+                                <div className="text-xs text-orange-500 font-bold mb-2">struct Student {inst.name}</div>
+                                <div className="space-y-1">
+                                    <div className="h-4 bg-muted-foreground/20 rounded w-full flex items-center px-1 text-[8px] text-muted-foreground">id</div>
+                                    <div className="h-4 bg-muted-foreground/20 rounded w-3/4 flex items-center px-1 text-[8px] text-muted-foreground">name</div>
+                                    <div className="h-4 bg-muted-foreground/20 rounded w-1/2 flex items-center px-1 text-[8px] text-muted-foreground">marks</div>
+                                </div>
+                                <div className="mt-2 text-[9px] text-muted-foreground text-right">Size: 28B</div>
+                            </div>
+                        ))}
+                        {instances.length === 0 && (
+                            <div className="w-full text-center text-muted-foreground italic py-10">
+                                No memory allocated yet. Click the button to create variables.
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const InitializationLab = () => {
+    const [method, setMethod] = useState<'standard' | 'designated'>('standard');
+
+    return (
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <ClipboardList size={20} className="text-green-500" /> Filling the Form (Initialization)
+            </h3>
+
+            <div className="flex gap-4 mb-8">
+                <button
+                    onClick={() => setMethod('standard')}
+                    className={`flex-1 p-3 rounded-lg font-bold text-sm border transition-all ${method === 'standard' ? 'bg-green-600 border-green-400 text-white' : 'bg-muted border-border text-muted-foreground'}`}
+                >
+                    Standard (Order Matters)
+                </button>
+                <button
+                    onClick={() => setMethod('designated')}
+                    className={`flex-1 p-3 rounded-lg font-bold text-sm border transition-all ${method === 'designated' ? 'bg-purple-600 border-purple-400 text-white' : 'bg-muted border-border text-muted-foreground'}`}
+                >
+                    Designated (C99 Style)
+                </button>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 items-center">
-                {/* Controls */}
-                <div className="space-y-4">
-                    {func === 'strlen' && (
-                        <div className="space-y-2">
-                            <label className="text-xs text-muted-foreground font-bold uppercase">Input String</label>
-                            <input value={src} onChange={e => setSrc(e.target.value)} className="w-full bg-muted border border-border rounded p-2 text-foreground font-mono" />
-                            <div className="p-4 bg-muted border border-border rounded text-center">
-                                <span className="text-muted-foreground text-xs block mb-1">Result</span>
-                                <span className="text-4xl font-mono font-bold text-green-500">{src.length}</span>
-                            </div>
-                        </div>
-                    )}
-
-                    {func === 'strcpy' && (
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-xs text-muted-foreground font-bold uppercase">Source (src)</label>
-                                <input value={src} onChange={e => setSrc(e.target.value)} className="w-full bg-muted border border-border rounded p-2 text-foreground font-mono" />
-                            </div>
-                            <div className="p-3 bg-muted rounded border border-border text-xs text-muted-foreground">
-                                <code>strcpy(dest, src);</code> copies data char by char, including <code>\0</code>.
-                            </div>
-                        </div>
-                    )}
-
-                    {func === 'strcat' && (
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-xs text-muted-foreground font-bold uppercase">Destination (dest)</label>
-                                <div className="w-full bg-muted border border-border rounded p-2 text-foreground font-mono">Hi</div>
-                            </div>
-                            <div>
-                                <label className="text-xs text-muted-foreground font-bold uppercase">Source (src)</label>
-                                <input value={src} onChange={e => setSrc(e.target.value)} className="w-full bg-muted border border-border rounded p-2 text-foreground font-mono" />
-                            </div>
-                        </div>
+                <div>
+                    {method === 'standard' ? (
+                        <CodeBlock title="Traditional Way" code={'struct Point p = {10, 20};\n// 10 goes to 1st member\n// 20 goes to 2nd member'} />
+                    ) : (
+                        <CodeBlock title="Modern Way (C99+)" code={'struct Point p = {\n  .y = 20,\n  .x = 10\n};\n// Order doesn\'t matter!'} />
                     )}
                 </div>
 
-                {/* Visualizer */}
-                <div className="bg-black/5 dark:bg-black/50 p-6 rounded-xl border border-border flex flex-col items-center justify-center min-h-[200px]">
-                    {func === 'strlen' && (
-                        <div className="flex gap-1 flex-wrap justify-center">
-                            {src.split('').map((c, i) => (
-                                <div key={i} className="flex flex-col items-center">
-                                    <div className="w-8 h-10 border border-green-500/50 text-green-600 dark:text-green-300 flex items-center justify-center rounded bg-green-100 dark:bg-green-900/10 font-bold">1</div>
-                                    <span className="text-[10px] text-muted-foreground mt-1">{c}</span>
-                                </div>
-                            ))}
-                            <div className="flex flex-col items-center opacity-50">
-                                <div className="w-8 h-10 border border-border text-muted-foreground flex items-center justify-center rounded">0</div>
-                                <span className="text-[10px] text-muted-foreground mt-1">\0</span>
-                            </div>
+                <div className="bg-black p-6 rounded-xl border border-slate-800 relative">
+                    <div className="absolute top-2 right-2 text-xs text-slate-500 font-bold uppercase">Memory</div>
+                    <div className="space-y-2 font-mono">
+                        <div className="flex justify-between items-center bg-slate-900 p-2 rounded border border-slate-700">
+                            <span className="text-blue-400">p.x</span>
+                            <span className="text-white text-xl font-bold">10</span>
                         </div>
-                    )}
-
-                    {(func === 'strcpy' || func === 'strcat') && (
-                        <div className="w-full">
-                            <div className="text-xs text-muted-foreground uppercase font-bold mb-2 text-center">Destination Buffer (Size 10)</div>
-                            <div className="flex border-2 border-border rounded-lg overflow-hidden bg-muted">
-                                {Array.from({ length: 10 }).map((_, i) => {
-                                    let char = '';
-                                    let isNew = false;
-                                    let isOverflow = false;
-
-                                    if (func === 'strcpy') {
-                                        if (i < src.length) { char = src[i]; isNew = true; }
-                                        else if (i === src.length) { char = '\\0'; isNew = true; }
-                                        else char = ''; // Empty
-                                    } else {
-                                        // strcat logic: dest is "Hi" (length 2)
-                                        const destLen = 2;
-                                        if (i < destLen) char = "Hi"[i];
-                                        else if (i < destLen + src.length) { char = src[i - destLen]; isNew = true; }
-                                        else if (i === destLen + src.length) { char = '\\0'; isNew = true; }
-                                    }
-
-                                    // Overflow check
-                                    if ((func === 'strcpy' && src.length >= 10) || (func === 'strcat' && (2 + src.length) >= 10)) {
-                                        isOverflow = true;
-                                    }
-
-                                    return (
-                                        <div key={i} className={`flex-1 h-12 flex items-center justify-center border-r border-border font-mono text-sm
-                       ${isNew ? 'text-green-600 dark:text-green-400 font-bold bg-green-100 dark:bg-green-900/10' : 'text-muted-foreground'}
-                       ${isOverflow && i === 9 ? 'bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-200 animate-pulse' : ''}
-                     `}>
-                                            {char}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            {(func === 'strcpy' && src.length >= 10) || (func === 'strcat' && (2 + src.length) >= 10) ? (
-                                <div className="mt-2 text-center text-red-500 text-xs font-bold flex items-center justify-center gap-2">
-                                    <AlertTriangle size={12} /> BUFFER OVERFLOW DETECTED
-                                </div>
-                            ) : null}
+                        <div className="flex justify-between items-center bg-slate-900 p-2 rounded border border-slate-700">
+                            <span className="text-purple-400">p.y</span>
+                            <span className="text-white text-xl font-bold">20</span>
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </div>
     );
 };
 
-const ComparisonCourt = () => {
-    const [s1, setS1] = useState("Apple");
-    const [s2, setS2] = useState("Apricot");
-    const [idx, setIdx] = useState(0);
-
-    // Comparison Logic
-    const compare = () => {
-        let i = 0;
-        while (i < s1.length && i < s2.length) {
-            if (s1[i] !== s2[i]) return { idx: i, res: s1.charCodeAt(i) - s2.charCodeAt(i) };
-            i++;
-        }
-        return { idx: i, res: s1.length - s2.length };
-    };
-
-    const { idx: stopIdx, res } = compare();
+const DotOperatorLab = () => {
+    const [p1, setP1] = useState({ x: 10, y: 20 });
+    const [activeField, setActiveField] = useState<'x' | 'y' | null>(null);
 
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Scale size={20} className="text-orange-500" /> Comparison Court (strcmp)
+                <Settings size={20} className="text-green-500" /> Member Access (Dot Operator)
             </h3>
 
-            <div className="grid md:grid-cols-2 gap-8 mb-8">
-                <div>
-                    <label className="text-xs text-muted-foreground font-bold uppercase mb-1">String 1</label>
-                    <input value={s1} onChange={e => setS1(e.target.value)} className="w-full bg-muted border border-border rounded p-2 text-foreground font-mono" />
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+                {/* Code Control */}
+                <div className="space-y-6">
+                    <div className="bg-muted p-4 rounded-xl border border-border">
+                        <div className="text-xs font-bold text-muted-foreground uppercase mb-2">struct Point p1;</div>
+
+                        <div className="space-y-4">
+                            <div
+                                className={`flex items-center gap-4 p-2 rounded transition-all ${activeField === 'x' ? 'bg-green-100 dark:bg-green-900/30 ring-1 ring-green-500' : 'hover:bg-card'}`}
+                                onMouseEnter={() => setActiveField('x')}
+                                onMouseLeave={() => setActiveField(null)}
+                            >
+                                <code className="text-sm font-mono text-foreground">p1.x = </code>
+                                <input
+                                    type="number" value={p1.x} onChange={e => setP1({ ...p1, x: Number(e.target.value) })}
+                                    className="bg-background border border-border rounded px-2 py-1 text-green-500 font-bold w-20 text-center"
+                                />
+                                <span className="text-muted-foreground text-xs">// Access member x</span>
+                            </div>
+
+                            <div
+                                className={`flex items-center gap-4 p-2 rounded transition-all ${activeField === 'y' ? 'bg-green-100 dark:bg-green-900/30 ring-1 ring-green-500' : 'hover:bg-card'}`}
+                                onMouseEnter={() => setActiveField('y')}
+                                onMouseLeave={() => setActiveField(null)}
+                            >
+                                <code className="text-sm font-mono text-foreground">p1.y = </code>
+                                <input
+                                    type="number" value={p1.y} onChange={e => setP1({ ...p1, y: Number(e.target.value) })}
+                                    className="bg-background border border-border rounded px-2 py-1 text-green-500 font-bold w-20 text-center"
+                                />
+                                <span className="text-muted-foreground text-xs">// Access member y</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label className="text-xs text-muted-foreground font-bold uppercase mb-1">String 2</label>
-                    <input value={s2} onChange={e => setS2(e.target.value)} className="w-full bg-muted border border-border rounded p-2 text-foreground font-mono" />
+
+                {/* Visual Object */}
+                <div className="relative">
+                    <div className="bg-muted rounded-xl p-8 border-2 border-border shadow-2xl relative w-48 mx-auto">
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-popover px-3 text-xs text-muted-foreground font-bold uppercase border border-border rounded-full">
+                            Variable p1
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className={`p-3 bg-card rounded border transition-colors ${activeField === 'x' ? 'border-green-500' : 'border-border'}`}>
+                                <div className="text-[10px] text-muted-foreground uppercase font-bold">int x</div>
+                                <div className="text-2xl text-foreground font-mono">{p1.x}</div>
+                            </div>
+                            <div className={`p-3 bg-card rounded border transition-colors ${activeField === 'y' ? 'border-green-500' : 'border-border'}`}>
+                                <div className="text-[10px] text-muted-foreground uppercase font-bold">int y</div>
+                                <div className="text-2xl text-foreground font-mono">{p1.y}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+    );
+};
 
-            <div className="flex justify-center gap-1 mb-8">
-                {Array.from({ length: Math.max(s1.length, s2.length) }).map((_, i) => (
-                    <div key={i} className={`flex flex-col items-center w-8 transition-opacity duration-500 ${i > stopIdx ? 'opacity-20' : 'opacity-100'}`}>
-                        <div className={`w-8 h-8 border-b border-border flex items-center justify-center font-mono ${i === stopIdx ? 'text-orange-500 font-bold' : 'text-muted-foreground'}`}>
-                            {s1[i] || '\\0'}
+const StructLayoutLab = () => {
+    const [layout, setLayout] = useState<'naive' | 'optimized'>('naive');
+
+    // Naive: char (1) + pad(7) + double(8) + int(4) + pad(4) = 24 bytes
+    const naiveBlocks = [
+        { type: 'char', size: 1, color: 'bg-blue-500' },
+        { type: 'pad', size: 7, color: 'bg-slate-700 opacity-50' },
+        { type: 'double', size: 8, color: 'bg-green-500' },
+        { type: 'int', size: 4, color: 'bg-purple-500' },
+        { type: 'pad', size: 4, color: 'bg-slate-700 opacity-50' },
+    ];
+
+    // Optimized: double(8) + int(4) + char(1) + pad(3) = 16 bytes
+    const optimizedBlocks = [
+        { type: 'double', size: 8, color: 'bg-green-500' },
+        { type: 'int', size: 4, color: 'bg-purple-500' },
+        { type: 'char', size: 1, color: 'bg-blue-500' },
+        { type: 'pad', size: 3, color: 'bg-slate-700 opacity-50' },
+    ];
+
+    const blocks = layout === 'naive' ? naiveBlocks : optimizedBlocks;
+    const totalSize = blocks.reduce((acc, b) => acc + b.size, 0);
+
+    return (
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <Database size={20} className="text-orange-500" /> Padding & Layout Optimizer
+            </h3>
+
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+                <div className="w-full md:w-1/3 space-y-4">
+                    <div className="bg-muted p-4 rounded-xl border border-border">
+                        <div className="text-xs text-muted-foreground uppercase font-bold mb-2">Members</div>
+                        <div className="space-y-2 font-mono text-sm">
+                            <div className="text-blue-500">char c;   // 1 Byte</div>
+                            <div className="text-green-500">double d; // 8 Bytes</div>
+                            <div className="text-purple-500">int i;    // 4 Bytes</div>
                         </div>
-                        <div className={`w-8 h-8 flex items-center justify-center font-mono ${i === stopIdx ? 'text-orange-500 font-bold' : 'text-muted-foreground'}`}>
-                            {s2[i] || '\\0'}
-                        </div>
-                        {i === stopIdx && (
-                            <div className="mt-2 text-[10px] text-orange-500 font-bold">DIFF</div>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setLayout('naive')}
+                            className={`flex-1 py-2 rounded text-xs font-bold border transition-all ${layout === 'naive' ? 'bg-red-100 dark:bg-red-900/30 border-red-500 text-red-600 dark:text-red-300' : 'bg-muted border-border text-muted-foreground'}`}
+                        >
+                            Naive Order
+                        </button>
+                        <button
+                            onClick={() => setLayout('optimized')}
+                            className={`flex-1 py-2 rounded text-xs font-bold border transition-all ${layout === 'optimized' ? 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-600 dark:text-green-300' : 'bg-muted border-border text-muted-foreground'}`}
+                        >
+                            Optimized Order
+                        </button>
+                    </div>
+
+                    <div className={`p-3 rounded-lg border text-center ${layout === 'optimized' ? 'border-green-500 text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/10' : 'border-red-500 text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/10'}`}>
+                        <div className="text-[10px] uppercase font-bold mb-1">Total Size</div>
+                        <div className="text-2xl font-black">{totalSize} Bytes</div>
+                        <div className="text-[10px] opacity-70 mt-1">{layout === 'naive' ? "Wasted: 11 Bytes" : "Wasted: 3 Bytes"}</div>
+                    </div>
+                </div>
+
+                <div className="flex-1 bg-black/5 dark:bg-black/40 p-6 rounded-xl border border-border">
+                    <div className="text-xs text-muted-foreground uppercase font-bold mb-4 text-center">Memory Map (1 Block = 1 Byte)</div>
+
+                    <div className="flex flex-wrap gap-1 max-w-[400px] mx-auto">
+                        {blocks.map((b, i) => (
+                            <React.Fragment key={i}>
+                                {Array.from({ length: b.size }).map((_, j) => (
+                                    <div
+                                        key={`${i}-${j}`}
+                                        className={`w-8 h-8 rounded border border-black/20 flex items-center justify-center text-[8px] font-bold text-white shadow-sm hover:scale-110 transition-transform cursor-help ${b.color}`}
+                                        title={`${b.type} (Byte ${j + 1})`}
+                                    >
+                                        {b.type === 'pad' ? 'X' : b.type[0].toUpperCase()}
+                                    </div>
+                                ))}
+                            </React.Fragment>
+                        ))}
+                    </div>
+
+                    <div className="mt-6 text-xs text-muted-foreground leading-relaxed bg-muted p-3 rounded border border-border">
+                        {layout === 'naive' ? (
+                            <span>
+                                <strong>Why so big?</strong> double d requires 8-byte alignment.
+                                It can't start at offset 1 (after char), so the CPU inserts <strong>7 padding bytes</strong>.
+                                Total size must also align to 8, adding 4 more bytes at the end.
+                            </span>
+                        ) : (
+                            <span>
+                                <strong>Why efficient?</strong> By placing the largest member (double) first, we satisfy alignment immediately.
+                                int fits perfectly after double. char fits after int.
+                                Only minimal padding (3 bytes) is needed at the end to align the total size.
+                            </span>
                         )}
                     </div>
-                ))}
-            </div>
-
-            <div className="bg-black/5 dark:bg-black/40 p-4 rounded-xl border border-border text-center">
-                <div className="text-xs text-muted-foreground font-bold uppercase mb-2">Return Value</div>
-                <div className={`text-4xl font-black ${res === 0 ? 'text-green-500' : res < 0 ? 'text-blue-500' : 'text-purple-500'}`}>
-                    {res}
-                </div>
-                <div className="text-sm text-muted-foreground mt-2">
-                    {res === 0 && "Strings are Identical"}
-                    {res < 0 && `String 1 is lexicographically SMALLER ('${s1[stopIdx] || '\\0'}' < '${s2[stopIdx] || '\\0'}')`}
-                    {res > 0 && `String 1 is lexicographically LARGER ('${s1[stopIdx] || '\\0'}' > '${s2[stopIdx] || '\\0'}')`}
                 </div>
             </div>
         </div>
     );
 };
 
-const IOStudio = () => {
+const AssignmentDemo = () => {
+    const [s1, setS1] = useState(10);
+    const [s2, setS2] = useState(0);
+
+    const copy = () => {
+        setS2(s1);
+    };
+
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Keyboard size={20} className="text-pink-500" /> Input/Output Studio
+                <Copy size={20} className="text-pink-500" /> Structure Assignment (Cloning)
             </h3>
 
-            <div className="grid md:grid-cols-2 gap-8">
-                <div className="bg-red-100 dark:bg-red-900/10 border border-red-500/20 p-4 rounded-xl">
-                    <h4 className="text-red-600 dark:text-red-400 font-bold mb-2 flex items-center gap-2"><AlertTriangle size={16} /> The Danger: scanf / gets</h4>
-                    <CodeBlock code={'char name[5];\nscanf("%s", name); // Input: "Jonathan"\n// CRASH! Buffer overflow.'} />
-                    <p className="text-xs text-muted-foreground mt-2">
-                        <code>scanf</code> stops at spaces. <code>gets</code> doesn't check size. Both are risky.
-                    </p>
+            <div className="grid md:grid-cols-3 gap-4 items-center">
+                {/* Source */}
+                <div className="bg-muted p-4 rounded-xl border border-border text-center">
+                    <div className="text-xs text-muted-foreground uppercase font-bold mb-2">struct Data s1</div>
+                    <input
+                        type="number" value={s1} onChange={e => setS1(Number(e.target.value))}
+                        className="bg-background border border-border rounded p-2 text-center text-foreground text-xl font-bold w-24"
+                    />
                 </div>
 
-                <div className="bg-green-100 dark:bg-green-900/10 border border-green-500/20 p-4 rounded-xl">
-                    <h4 className="text-green-600 dark:text-green-400 font-bold mb-2 flex items-center gap-2"><CheckCircle size={16} /> The Solution: fgets</h4>
-                    <CodeBlock code={'char name[5];\nfgets(name, 5, stdin); // Input: "Jonathan"\n// Reads "Jona\\0". Safe.'} />
-                    <p className="text-xs text-muted-foreground mt-2">
-                        <code>fgets</code> reads entire lines (including spaces) but respects buffer size limit.
-                    </p>
+                {/* Action */}
+                <div className="flex flex-col items-center">
+                    <button
+                        onClick={copy}
+                        className="bg-pink-600 hover:bg-pink-500 text-white px-6 py-2 rounded-full font-bold shadow-lg active:scale-95 transition-transform"
+                    >
+                        s2 = s1;
+                    </button>
+                    <span className="text-[10px] text-muted-foreground mt-2">Copies all members automatically</span>
+                </div>
+
+                {/* Dest */}
+                <div className="bg-muted p-4 rounded-xl border border-border text-center">
+                    <div className="text-xs text-muted-foreground uppercase font-bold mb-2">struct Data s2</div>
+                    <div className={`text-xl font-bold p-2 ${s2 === s1 ? 'text-green-500 animate-pulse' : 'text-muted-foreground'}`}>
+                        {s2}
+                    </div>
                 </div>
             </div>
         </div>
     );
 };
 
-const MatrixVisualizer = () => {
+const TypedefTransform = () => {
+    const [transformed, setTransformed] = useState(false);
+
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Grid size={20} className="text-purple-500" /> 2D Strings (Matrix)
+                <RefreshCw size={20} className="text-purple-500" /> The Typedef Shortcut
             </h3>
 
-            <div className="flex flex-col gap-4 items-center">
-                <div className="text-sm text-muted-foreground font-mono bg-muted p-2 rounded">
-                    char names[3][5] = {"{"}"Tom", "Sam", "Joy"{"}"};
-                </div>
+            <div className="flex flex-col items-center gap-6">
+                <button
+                    onClick={() => setTransformed(!transformed)}
+                    className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2 rounded-full font-bold text-sm flex items-center gap-2"
+                >
+                    {transformed ? <Minimize size={16} /> : <Maximize size={16} />}
+                    {transformed ? "Show Original" : "Apply typedef"}
+                </button>
 
-                <div className="border-2 border-border rounded-lg overflow-hidden bg-muted">
-                    {["Tom", "Sam", "Joy"].map((name, row) => (
-                        <div key={row} className="flex border-b border-border last:border-0">
-                            {/* 5 columns */}
-                            {[0, 1, 2, 3, 4].map(col => {
-                                const char = name[col] || (col === name.length ? '\\0' : '');
-                                return (
-                                    <div key={col} className="w-12 h-12 flex flex-col items-center justify-center border-r border-border last:border-0">
-                                        <span className={`font-bold ${char === '\\0' ? 'text-purple-500' : 'text-foreground'}`}>
-                                            {char}
-                                        </span>
-                                        <span className="text-[8px] text-muted-foreground">[{row}][{col}]</span>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    ))}
+                <div className="grid md:grid-cols-2 gap-8 w-full">
+                    <div className={`p-4 rounded-xl border transition-all duration-500 ${!transformed ? 'bg-muted border-border opacity-100' : 'bg-muted border-border opacity-50'}`}>
+                        <div className="text-xs text-muted-foreground uppercase font-bold mb-2">Without Typedef</div>
+                        <code className="text-sm text-foreground block mb-2">struct Student s1;</code>
+                        <code className="text-sm text-foreground block">void print(struct Student s);</code>
+                        <div className="mt-4 text-xs text-red-400">Must type 'struct' everywhere.</div>
+                    </div>
+
+                    <div className={`p-4 rounded-xl border transition-all duration-500 ${transformed ? 'bg-green-100 dark:bg-green-900/20 border-green-500 opacity-100 scale-105' : 'bg-muted border-border opacity-50'}`}>
+                        <div className="text-xs text-muted-foreground uppercase font-bold mb-2">With Typedef</div>
+                        <div className="mb-3 text-xs font-mono text-purple-600 dark:text-purple-300 bg-background p-2 rounded">typedef struct Student Student;</div>
+                        <code className="text-sm text-green-600 dark:text-green-300 block mb-2 font-bold">Student s1;</code>
+                        <code className="text-sm text-green-600 dark:text-green-300 block font-bold">void print(Student s);</code>
+                        <div className="mt-4 text-xs text-green-600 dark:text-green-400">Cleaner! Like a native type.</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -555,7 +457,7 @@ export default function Lecture1Page() {
                 <div className="flex items-center gap-3">
                     <img src="/cunitsLD/logo.png" alt="C-Units Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-500/20" />
                     <div className="hidden md:block">
-                        <h1 className="font-bold text-foreground text-sm leading-tight">String Theory</h1>
+                        <h1 className="font-bold text-foreground text-sm leading-tight">Structures</h1>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Unit 6 • Lecture 1</p>
                     </div>
                 </div>
@@ -568,89 +470,84 @@ export default function Lecture1Page() {
 
                 {/* HERO */}
                 <div className="text-center space-y-6">
-                    <div className="inline-flex items-center gap-2 bg-pink-100 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-500/30 text-pink-600 dark:text-pink-300 px-4 py-1.5 rounded-full text-xs font-bold animate-fade-in-up">
-                        <Type size={14} /> Character Arrays
+                    <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 px-4 py-1.5 rounded-full text-xs font-bold animate-fade-in-up">
+                        <Layers size={14} /> User Defined Types
                     </div>
                     <h1 className="text-5xl md:text-7xl font-extrabold text-foreground tracking-tight">
-                        Strings: The <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-purple-600 to-foreground dark:from-pink-400 dark:via-purple-400 dark:to-white">Null</span> Identity
+                        The <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-600 to-foreground dark:from-blue-400 dark:via-cyan-400 dark:to-white">Blueprint</span> of Data
                     </h1>
                     <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                        There is no "String" type in C. Just arrays of characters ending with a secret ghost character: <code>\0</code>.
+                        Arrays can only hold one type of data. Structures allow you to bundle mixed data types (int, float, char) into a single, logical unit—like a <strong>Digital Form</strong>.
                     </p>
                 </div>
 
-                {/* SECTION 1: ANATOMY */}
+                {/* SECTION 1: DEFINITION */}
                 <section>
-                    <SectionHeader title="The Null Terminator" icon={Type} color="blue" />
-                    <TheoryCard title="The '\0' Rule" variant="blue">
-                        <p className="mb-2">A string in C is a contiguous sequence of characters terminated by the null character.</p>
+                    <SectionHeader title="Defining Structures" icon={LayoutTemplate} color="blue" />
+                    <TheoryCard title="What is a Structure?" variant="blue">
+                        <p className="mb-2">A <code>struct</code> is a collection of variables (members) under a single name.</p>
                         <ul className="list-disc pl-4 space-y-1 text-sm text-muted-foreground">
-                            <li><strong>Declaration:</strong> <code>char str[] = "Hi";</code> (Size is 3: 'H', 'i', '\0')</li>
-                            <li><strong>Purpose:</strong> Tells functions like <code>printf</code> where the string ends.</li>
-                            <li><strong>Consequence:</strong> If missing, the computer keeps reading memory until it finds a random 0 (Garbage printing).</li>
+                            <li><strong>Analogy:</strong> Think of it as a <strong>Student ID Card</strong>. It holds a Name (string), Roll No (int), and GPA (float) all in one plastic card.</li>
+                            <li><strong>Declaration:</strong> Does not allocate memory. It just defines the shape (the template).</li>
+                            <li><strong>Instance:</strong> Allocates memory based on the definition (printing the card).</li>
                         </ul>
                     </TheoryCard>
-                    <StringAnatomy />
+                    <BlueprintStudio />
                 </section>
 
-                {/* SECTION 2: ASSIGNMENT VS COPY */}
+                {/* SECTION 2: INITIALIZATION */}
                 <section>
-                    <SectionHeader title="Assignment Logic" icon={Copy} color="orange" />
-                    <TheoryCard title="Why 'str = new' Fails" variant="red">
-                        <p className="text-sm text-muted-foreground">
-                            Array names are <strong>constant pointers</strong>. You cannot change the address they point to.
-                            To change the content, you must copy data byte-by-byte (using <code>strcpy</code>).
-                        </p>
-                    </TheoryCard>
-                    <AssignmentLab />
-                </section>
-
-                {/* SECTION 3: LIBRARY */}
-                <section>
-                    <SectionHeader title="String Manipulation" icon={Scissors} color="green" />
+                    <SectionHeader title="Filling the Form" icon={ClipboardList} color="green" />
                     <p className="text-muted-foreground mb-8">
-                        The <code>string.h</code> library provides tools to measure, copy, and concatenate strings.
-                        <strong>Warning:</strong> None of these check for buffer overflow automatically!
+                        Once you have a variable, you need to put data in it. C provides a few ways to do this.
                     </p>
-                    <LibraryBench />
+                    <InitializationLab />
                 </section>
 
-                {/* SECTION 4: THE SIZEOF TRAP */}
+                {/* SECTION 3: ACCESSING MEMBERS */}
                 <section>
-                    <SectionHeader title="The Interview Trap" icon={Ruler} color="yellow" />
+                    <SectionHeader title="Accessing Members" icon={Settings} color="green" />
                     <p className="text-muted-foreground mb-8">
-                        Do not confuse the size of the container (Array) with the length of the string (Strlen) or the size of the pointer.
+                        We use the <strong>Dot Operator (.)</strong> to access individual members of a structure variable. Think of it as "Opening the box to get item X".
                     </p>
-                    <SizeofTrap />
+                    <DotOperatorLab />
                 </section>
 
-                {/* SECTION 5: MATRIX */}
+                {/* SECTION 4: MEMORY & PADDING */}
                 <section>
-                    <SectionHeader title="2D String Arrays" icon={Grid} color="purple" />
-                    <MatrixVisualizer />
-                </section>
-
-                {/* SECTION 6: COMPARISON */}
-                <section>
-                    <SectionHeader title="String Comparison" icon={Terminal} color="orange" />
-                    <TheoryCard title="Comparing Texts" variant="orange">
+                    <SectionHeader title="Memory Layout & Padding" icon={Database} color="orange" />
+                    <TheoryCard title="The Hidden Bytes" variant="orange">
                         <p className="text-sm text-muted-foreground">
-                            You cannot use <code>==</code> to compare strings (that compares addresses!).
-                            Use <code>strcmp(s1, s2)</code>.
+                            Structure size is often <strong>larger</strong> than the sum of its members.
+                            The CPU inserts invisible "Padding" to align data to memory boundaries (e.g., multiples of 4 or 8) for speed.
                             <br /><br />
-                            It returns:
-                            <br />• <strong>0</strong> if equal.
-                            <br />• <strong>&lt; 0</strong> if s1 comes before s2 (ASCII).
-                            <br />• <strong>&gt; 0</strong> if s1 comes after s2 (ASCII).
+                            <strong>Rule 1:</strong> Members must start at an address divisible by their size.
+                            <br />
+                            <strong>Rule 2:</strong> Total size must be divisible by the largest member's size.
                         </p>
                     </TheoryCard>
-                    <ComparisonCourt />
+                    <StructLayoutLab />
                 </section>
 
-                {/* SECTION 7: I/O */}
+                {/* SECTION 5: ASSIGNMENT */}
                 <section>
-                    <SectionHeader title="Safe Input/Output" icon={Keyboard} color="pink" />
-                    <IOStudio />
+                    <SectionHeader title="Copying Structures" icon={Copy} color="pink" />
+                    <TheoryCard title="The Magic Copy" variant="red">
+                        <p className="text-sm text-muted-foreground">
+                            Unlike Arrays, Structures <strong>CAN</strong> be copied using the assignment operator <code>=</code>.
+                            This creates a shallow copy of all members.
+                        </p>
+                    </TheoryCard>
+                    <AssignmentDemo />
+                </section>
+
+                {/* SECTION 6: TYPEDEF */}
+                <section>
+                    <SectionHeader title="The Typedef Keyword" icon={CheckCircle} color="purple" />
+                    <p className="text-muted-foreground mb-8">
+                        <code>typedef</code> allows us to create an alias for a type, saving us from typing <code>struct</code> every time.
+                    </p>
+                    <TypedefTransform />
                 </section>
 
             </main>

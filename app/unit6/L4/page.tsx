@@ -2,21 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Combine,
-    Layers,
-    AlertTriangle,
-    Database,
-    Binary,
-    ArrowRight,
-    Cpu,
-    Monitor,
-    CheckCircle,
-    XCircle,
-    Box,
-    LayoutGrid,
-    Network,
+    Hash,
+    Replace,
+    ToggleLeft,
+    Zap,
+    ShieldCheck,
     FileCode,
-    BookOpen
+    AlertTriangle,
+    Settings,
+    Code,
+    Layers,
+    ArrowRight,
+    CheckCircle,
+    Scissors,
+    FileText
 } from 'lucide-react';
 import { ModeToggle } from '@/components/theme-toggle';
 
@@ -54,7 +53,8 @@ const TheoryCard = ({ title, children, variant = 'blue' }: { title: string, chil
         orange: 'border-orange-500 bg-orange-50 dark:bg-orange-900/10',
         red: 'border-red-500 bg-red-50 dark:bg-red-900/10',
         green: 'border-green-500 bg-green-50 dark:bg-green-900/10',
-        yellow: 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/10'
+        yellow: 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/10',
+        pink: 'border-pink-500 bg-pink-50 dark:bg-pink-900/10'
     };
 
     return (
@@ -71,287 +71,282 @@ const TheoryCard = ({ title, children, variant = 'blue' }: { title: string, chil
 
 // --- INTERACTIVE COMPONENTS ---
 
-const StructVsUnion = () => {
-    const [mode, setMode] = useState<'struct' | 'union'>('struct');
-    const [intVal, setIntVal] = useState(65);
-    const [charVal, setCharVal] = useState('A');
-    const [floatVal, setFloatVal] = useState(1.5);
-
-    const handleIntChange = (v: number) => {
-        setIntVal(v);
-        if (mode === 'union') {
-            // In union, all members share memory. Approximating the effect.
-            setCharVal(String.fromCharCode(v % 256));
-            setFloatVal(v); // Not accurate bitwise rep, but shows "clobbering"
-        }
-    };
+const SubstitutionEngine = () => {
+    const [stage, setStage] = useState<'source' | 'preprocessed'>('source');
 
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Combine size={20} className="text-blue-500" /> Struct vs Union: The Memory War
+                <Replace size={20} className="text-blue-500" /> Substitution Engine
             </h3>
 
             <div className="flex justify-center gap-4 mb-8">
                 <button
-                    onClick={() => setMode('struct')}
-                    className={`px-6 py-2 rounded-lg font-bold transition-all border-2 ${mode === 'struct' ? 'bg-blue-600 border-blue-400 text-white' : 'bg-muted border-border text-muted-foreground'}`}
+                    onClick={() => setStage('source')}
+                    className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${stage === 'source' ? 'bg-blue-600 text-white' : 'bg-muted text-muted-foreground'}`}
                 >
-                    Struct (Separate Memory)
+                    Source Code (.c)
                 </button>
+                <div className="flex items-center text-muted-foreground"><ArrowRight size={20} /></div>
                 <button
-                    onClick={() => setMode('union')}
-                    className={`px-6 py-2 rounded-lg font-bold transition-all border-2 ${mode === 'union' ? 'bg-orange-600 border-orange-400 text-white' : 'bg-muted border-border text-muted-foreground'}`}
+                    onClick={() => setStage('preprocessed')}
+                    className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${stage === 'preprocessed' ? 'bg-green-600 text-white' : 'bg-muted text-muted-foreground'}`}
                 >
-                    Union (Shared Memory)
+                    Preprocessed Code
                 </button>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-12">
-                {/* Controls */}
-                <div className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-4">
                     <div className="bg-muted p-4 rounded-xl border border-border">
-                        <label className="text-xs text-muted-foreground font-bold uppercase mb-2 block">int i (4 Bytes)</label>
-                        <input
-                            type="number" value={intVal} onChange={e => handleIntChange(Number(e.target.value))}
-                            className="bg-background border border-border rounded p-2 text-foreground w-full font-mono"
-                        />
-                    </div>
-                    <div className="bg-muted p-4 rounded-xl border border-border relative overflow-hidden">
-                        <label className="text-xs text-muted-foreground font-bold uppercase mb-2 block">char c (1 Byte)</label>
-                        <div className="text-2xl font-mono font-bold text-foreground">{charVal}</div>
-                        {mode === 'union' && <div className="absolute top-2 right-2 text-[10px] text-orange-500 font-bold animate-pulse">OVERWRITTEN!</div>}
-                    </div>
-                    <div className="bg-muted p-4 rounded-xl border border-border relative overflow-hidden">
-                        <label className="text-xs text-muted-foreground font-bold uppercase mb-2 block">float f (4 Bytes)</label>
-                        <div className="text-2xl font-mono font-bold text-foreground">{floatVal}</div>
-                        {mode === 'union' && <div className="absolute top-2 right-2 text-[10px] text-orange-500 font-bold animate-pulse">CORRUPTED!</div>}
+                        <div className="text-xs text-muted-foreground uppercase font-bold mb-2">Definitions</div>
+                        <code className="block text-purple-600 dark:text-purple-400">#define PI 3.14</code>
+                        <code className="block text-purple-600 dark:text-purple-400">#define MAX 100</code>
+                        <code className="block text-purple-600 dark:text-purple-400">#define SQ(x) ((x)*(x))</code>
                     </div>
                 </div>
 
-                {/* Visualization */}
-                <div className="flex flex-col justify-center gap-4">
-                    <div className="text-center text-sm font-bold text-muted-foreground mb-2">Memory Layout</div>
-
-                    {mode === 'struct' ? (
-                        <div className="flex flex-col gap-2 animate-in slide-in-from-left-4">
-                            <div className="h-16 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">int i (4B)</div>
-                            <div className="h-8 bg-purple-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg w-1/4">char c (1B)</div>
-                            <div className="h-16 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">float f (4B)</div>
-                            <div className="mt-2 text-center text-xs text-muted-foreground">Total Size: 9+ Bytes (Padding added)</div>
+                <div className="relative bg-black/5 dark:bg-black/40 p-4 rounded-xl border border-border min-h-[150px] flex items-center justify-center">
+                    {stage === 'source' ? (
+                        <div className="font-mono text-sm text-foreground animate-in fade-in">
+                            float area = <span className="text-purple-600 dark:text-purple-400 font-bold">PI</span> * r * r;<br />
+                            if (val &gt; <span className="text-purple-600 dark:text-purple-400 font-bold">MAX</span>) break;<br />
+                            int y = <span className="text-purple-600 dark:text-purple-400 font-bold">SQ(5+1)</span>;
                         </div>
                     ) : (
-                        <div className="relative h-48 border-4 border-orange-500 rounded-xl bg-orange-100 dark:bg-orange-900/10 flex items-center justify-center overflow-hidden animate-in zoom-in">
-                            <div className="absolute inset-0 bg-blue-600/30 flex items-center justify-center">
-                                <span className="text-blue-700 dark:text-blue-300 font-bold opacity-50 text-4xl">int i</span>
-                            </div>
-                            <div className="absolute top-0 left-0 w-1/4 h-full bg-purple-600/30 flex items-start p-2">
-                                <span className="text-purple-700 dark:text-purple-300 font-bold text-xs">char c</span>
-                            </div>
-                            <div className="absolute inset-0 border-2 border-green-500/30 flex items-end justify-center pb-2">
-                                <span className="text-green-700 dark:text-green-300 font-bold opacity-50 text-xl">float f</span>
-                            </div>
-                            <div className="absolute bottom-2 right-2 bg-black/50 px-2 py-1 rounded text-xs text-orange-400 font-bold">
-                                Total Size: 4 Bytes (Largest Member)
-                            </div>
+                        <div className="font-mono text-sm text-green-600 dark:text-green-300 animate-in zoom-in">
+                            float area = <span className="text-foreground font-bold bg-muted px-1 rounded">3.14</span> * r * r;<br />
+                            if (val &gt; <span className="text-foreground font-bold bg-muted px-1 rounded">100</span>) break;<br />
+                            int y = <span className="text-foreground font-bold bg-muted px-1 rounded">((5+1)*(5+1))</span>;
                         </div>
                     )}
                 </div>
             </div>
-
-            <TheoryCard title="Deep Dive: Size Calculation" variant={mode === 'struct' ? 'blue' : 'orange'}>
-                {mode === 'struct' ? (
-                    <p className="text-xs">
-                        <strong>Struct Size:</strong> Sum of all members + Padding for alignment.
-                        <br /><code>sizeof(struct)</code> = 4 + 1 + 3(pad) + 4 = 12 Bytes (typically).
-                    </p>
-                ) : (
-                    <p className="text-xs">
-                        <strong>Union Size:</strong> Size of the <strong>LARGEST</strong> member.
-                        <br />Since <code>int</code> and <code>float</code> are both 4 bytes, the union is 4 bytes. All members start at offset 0.
-                        Writing to one overwrites the bits of the others.
-                    </p>
-                )}
-            </TheoryCard>
         </div>
     );
 };
 
-const TaggedUnionLab = () => {
-    const [type, setType] = useState<'INT' | 'FLOAT' | 'STR'>('INT');
+const ConditionalLab = () => {
+    const [debug, setDebug] = useState(true);
+    const [os, setOs] = useState<'WIN' | 'LINUX'>('WIN');
 
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Box size={20} className="text-green-500" /> Safe Usage: Tagged Union
+                <ToggleLeft size={20} className="text-orange-500" /> Conditional Compilation
             </h3>
 
+            <div className="flex flex-wrap gap-6 mb-8 justify-center">
+                <div className="flex items-center gap-2 bg-muted p-2 rounded-lg border border-border">
+                    <span className="text-xs font-bold text-muted-foreground">#define DEBUG</span>
+                    <button
+                        onClick={() => setDebug(!debug)}
+                        className={`w-10 h-5 rounded-full p-1 transition-colors ${debug ? 'bg-green-500' : 'bg-slate-300 dark:bg-slate-700'}`}
+                    >
+                        <div className={`w-3 h-3 bg-white rounded-full shadow transform transition-transform ${debug ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                    </button>
+                </div>
+
+                <div className="flex items-center gap-2 bg-muted p-2 rounded-lg border border-border">
+                    <span className="text-xs font-bold text-muted-foreground">Target OS</span>
+                    <div className="flex bg-black/10 dark:bg-black rounded p-1">
+                        <button onClick={() => setOs('WIN')} className={`px-3 py-1 rounded text-xs font-bold ${os === 'WIN' ? 'bg-blue-600 text-white' : 'text-muted-foreground'}`}>WINDOWS</button>
+                        <button onClick={() => setOs('LINUX')} className={`px-3 py-1 rounded text-xs font-bold ${os === 'LINUX' ? 'bg-orange-600 text-white' : 'text-muted-foreground'}`}>LINUX</button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-black/5 dark:bg-black/40 p-6 rounded-xl border border-border font-mono text-sm">
+                <div className="text-muted-foreground">void setup() {'{'}</div>
+
+                {/* OS Logic */}
+                <div className="pl-4 my-2 border-l-2 border-blue-500/30">
+                    <div className="text-purple-600 dark:text-purple-400">#ifdef WINDOWS</div>
+                    {os === 'WIN' ? (
+                        <div className="text-green-600 dark:text-green-400 font-bold pl-4">init_windows_api();</div>
+                    ) : (
+                        <div className="text-muted-foreground/50 pl-4 decoration-line-through">init_windows_api();</div>
+                    )}
+                    <div className="text-purple-600 dark:text-purple-400">#else</div>
+                    {os === 'LINUX' ? (
+                        <div className="text-green-600 dark:text-green-400 font-bold pl-4">init_linux_kernel();</div>
+                    ) : (
+                        <div className="text-muted-foreground/50 pl-4 decoration-line-through">init_linux_kernel();</div>
+                    )}
+                    <div className="text-purple-600 dark:text-purple-400">#endif</div>
+                </div>
+
+                {/* Debug Logic */}
+                <div className="pl-4 my-2 border-l-2 border-green-500/30">
+                    <div className="text-purple-600 dark:text-purple-400">#ifdef DEBUG</div>
+                    {debug ? (
+                        <div className="text-orange-500 dark:text-orange-400 font-bold pl-4">printf("Log: System Starting...\n");</div>
+                    ) : (
+                        <div className="text-muted-foreground/50 pl-4 decoration-line-through">printf("Log: System Starting...\n");</div>
+                    )}
+                    <div className="text-purple-600 dark:text-purple-400">#endif</div>
+                </div>
+
+                <div className="text-muted-foreground">{'}'}</div>
+            </div>
+        </div>
+    );
+};
+
+const MacroVsFunc = () => {
+    const [mode, setMode] = useState<'macro' | 'func'>('macro');
+
+    return (
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <Zap size={20} className="text-yellow-500" /> Macro vs Function: The Showdown
+            </h3>
+
+            <div className="flex gap-4 mb-8 justify-center">
+                <button onClick={() => setMode('macro')} className={`px-6 py-2 rounded-lg font-bold border transition-all ${mode === 'macro' ? 'bg-yellow-600 border-yellow-400 text-white' : 'bg-muted border-border text-muted-foreground'}`}>Macro (Speed)</button>
+                <button onClick={() => setMode('func')} className={`px-6 py-2 rounded-lg font-bold border transition-all ${mode === 'func' ? 'bg-blue-600 border-blue-400 text-white' : 'bg-muted border-border text-muted-foreground'}`}>Function (Safety)</button>
+            </div>
+
             <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                    <TheoryCard title="Polymorphism in C" variant="green">
-                        <p className="text-sm">
-                            Since C lacks "Classes" with dynamic types, we use <strong>Tagged Unions</strong> to simulate Polymorphism (a variable that can hold different types).
-                            <br /><br />
-                            <strong>Structure:</strong> A <code>struct</code> containing an <code>enum</code> (Tag) and a <code>union</code> (Value).
-                        </p>
+                <div className="space-y-4">
+                    <TheoryCard title={mode === 'macro' ? "Text Substitution" : "Stack Frame Call"} variant={mode === 'macro' ? 'yellow' : 'blue'}>
+                        {mode === 'macro' ? (
+                            <ul className="text-xs list-disc pl-4 space-y-1">
+                                <li><strong>Pros:</strong> No call overhead. Faster execution. Generic types.</li>
+                                <li><strong>Cons:</strong> Code bloat (replaces every instance). No type checking. Side effects (e.g., <code>SQ(i++)</code> fails).</li>
+                            </ul>
+                        ) : (
+                            <ul className="text-xs list-disc pl-4 space-y-1">
+                                <li><strong>Pros:</strong> Type safe. Easy to debug. No side effect surprises.</li>
+                                <li><strong>Cons:</strong> Slower (push/pop stack). Fixed types.</li>
+                            </ul>
+                        )}
                     </TheoryCard>
                     <CodeBlock
-                        title="Safe Pattern"
-                        code={'struct Variant {\n  enum { INT, FLOAT, STR } type;\n  union {\n    int i;\n    float f;\n    char str[10];\n  } val;\n};'}
+                        title="Definition"
+                        code={mode === 'macro' ? '#define MAX(a,b) ((a)>(b)?(a):(b))' : 'int max(int a, int b) {\n  return a > b ? a : b;\n}'}
                     />
                 </div>
 
-                <div className="bg-muted p-6 rounded-xl border border-border flex flex-col justify-center">
-                    <div className="flex gap-2 mb-6 justify-center">
-                        {['INT', 'FLOAT', 'STR'].map(t => (
-                            <button
-                                key={t}
-                                onClick={() => setType(t as any)}
-                                className={`px-3 py-1 rounded text-xs font-bold transition-all ${type === t ? 'bg-green-600 text-white' : 'bg-card border border-border text-muted-foreground'}`}
-                            >
-                                Set {t}
-                            </button>
-                        ))}
-                    </div>
-
-                    <div className="bg-black p-4 rounded-lg border border-slate-700 font-mono text-sm relative overflow-hidden">
-                        <div className="flex items-center gap-4 mb-2">
-                            <span className="text-blue-400 font-bold">tag:</span>
-                            <span className="text-white">{type}</span>
+                <div className="bg-muted rounded-xl p-6 border border-border flex items-center justify-center h-48 relative overflow-hidden">
+                    {mode === 'macro' ? (
+                        <div className="text-center animate-in zoom-in">
+                            <div className="text-yellow-600 dark:text-yellow-400 font-bold text-lg mb-2">INLINE EXPANSION</div>
+                            <div className="text-muted-foreground text-xs">Code is pasted directly.</div>
+                            <Zap size={48} className="mx-auto mt-4 text-yellow-500 animate-pulse" />
                         </div>
-                        <div className="border-t border-slate-800 my-2"></div>
-                        <div className="relative h-12 flex items-center">
-                            {type === 'INT' && <span className="text-green-400 font-bold text-xl animate-in fade-in">val.i = 42</span>}
-                            {type === 'FLOAT' && <span className="text-orange-400 font-bold text-xl animate-in fade-in">val.f = 3.14</span>}
-                            {type === 'STR' && <span className="text-purple-400 font-bold text-xl animate-in fade-in">val.str = "Hi"</span>}
+                    ) : (
+                        <div className="text-center animate-in slide-in-from-right">
+                            <div className="text-blue-600 dark:text-blue-400 font-bold text-lg mb-2">STACK JUMP</div>
+                            <div className="text-muted-foreground text-xs">Push Params &rarr; Jump &rarr; Return</div>
+                            <Layers size={48} className="mx-auto mt-4 text-blue-500" />
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>
     );
 };
 
-const EndiannessInspector = () => {
-    const val = 0x11223344;
+const IncludeGuard = () => {
+    const [guarded, setGuarded] = useState(false);
 
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Binary size={20} className="text-yellow-500" /> Type Punning & Endianness
+                <ShieldCheck size={20} className="text-green-500" /> The Include Guard
+            </h3>
+
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-4">
+                        <span className="text-sm font-bold text-muted-foreground">Protection:</span>
+                        <button
+                            onClick={() => setGuarded(!guarded)}
+                            className={`px-3 py-1 rounded text-xs font-bold transition-colors ${guarded ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}
+                        >
+                            {guarded ? "GUARD ON (#ifndef)" : "GUARD OFF"}
+                        </button>
+                    </div>
+
+                    <div className="bg-muted p-4 rounded-xl border border-border relative">
+                        <div className="absolute -top-3 left-4 bg-muted px-2 text-[10px] font-bold text-muted-foreground">myheader.h</div>
+                        <code className="block text-sm text-purple-600 dark:text-purple-400 opacity-50">#include "myheader.h"</code>
+                        <code className="block text-sm text-purple-600 dark:text-purple-400 opacity-50 mb-2">#include "myheader.h"</code>
+
+                        <div className={`p-2 rounded border ${guarded ? 'bg-green-100 dark:bg-green-900/10 border-green-500/50' : 'bg-red-100 dark:bg-red-900/10 border-red-500/50'}`}>
+                            {guarded && <div className="text-green-600 dark:text-green-400 font-bold text-xs mb-1">#ifndef HEADER_H</div>}
+                            {guarded && <div className="text-green-600 dark:text-green-400 font-bold text-xs mb-1">#define HEADER_H</div>}
+                            <div className="text-foreground text-sm">struct Data {'{'} int x; {'}'};</div>
+                            {guarded && <div className="text-green-600 dark:text-green-400 font-bold text-xs mt-1">#endif</div>}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-black/5 dark:bg-black/40 p-6 rounded-xl border border-border flex flex-col items-center justify-center text-center h-48">
+                    {guarded ? (
+                        <div className="animate-in fade-in">
+                            <CheckCircle size={48} className="text-green-500 mx-auto mb-2" />
+                            <h4 className="text-green-600 dark:text-green-400 font-bold">Compilation Successful</h4>
+                            <p className="text-xs text-muted-foreground mt-2">Header included only once. Skipped the second time.</p>
+                        </div>
+                    ) : (
+                        <div className="animate-in shake">
+                            <AlertTriangle size={48} className="text-red-500 mx-auto mb-2" />
+                            <h4 className="text-red-600 dark:text-red-400 font-bold">Redefinition Error!</h4>
+                            <p className="text-xs text-muted-foreground mt-2">"struct Data" defined twice. Compiler halts.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const AdvancedMacros = () => {
+    return (
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <Scissors size={20} className="text-pink-500" /> Advanced Tricks: Stringification & Concatenation
             </h3>
 
             <div className="grid md:grid-cols-2 gap-8">
                 <div>
-                    <TheoryCard title="Type Punning" variant="yellow">
-                        <p className="text-sm">
-                            <strong>Type Punning</strong> is accessing the same memory location using different types.
-                            Unions make this easy (though dangerous).
-                            <br /><br />
-                            Here, we write an <code>int</code> but read it back as an <code>array of chars</code> to see the individual bytes.
-                        </p>
+                    <TheoryCard title="Stringification (#)" variant="pink">
+                        <p className="text-sm mb-2">The <code>#</code> operator converts a macro argument into a string literal.</p>
+                        <CodeBlock title="Debug Helper" code={'#define PRINT_INT(x) printf(#x " = %d\\n", x)\n\nint a = 5;\nPRINT_INT(a); // Output: a = 5'} />
                     </TheoryCard>
-                    <CodeBlock code={'union {\n  int i;\n  char c[4];\n} u;\nu.i = 0x11223344;'} />
                 </div>
-
-                <div className="flex flex-col justify-center gap-4">
-                    <h4 className="text-xs font-bold text-muted-foreground uppercase text-center mb-2">Memory View (Little Endian)</h4>
-                    <div className="flex gap-2 justify-center">
-                        {['44', '33', '22', '11'].map((byte, i) => (
-                            <div key={i} className="flex flex-col items-center group">
-                                <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-500/50 rounded flex items-center justify-center text-yellow-600 dark:text-yellow-400 font-mono font-bold shadow-lg transition-transform group-hover:scale-110">
-                                    {byte}
-                                </div>
-                                <span className="text-[10px] text-muted-foreground mt-1">c[{i}]</span>
-                                <span className="text-[9px] text-muted-foreground/70">Addr +{i}</span>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="text-center text-xs text-muted-foreground bg-muted p-2 rounded border border-border mt-4">
-                        Note: Least Significant Byte (44) is stored at the Lowest Address.
-                    </div>
+                <div>
+                    <TheoryCard title="Token Pasting (##)" variant="pink">
+                        <p className="text-sm mb-2">The <code>##</code> operator concatenates two tokens into one.</p>
+                        <CodeBlock title="Variable Generator" code={'#define VAR(name, n) name##n\n\nint VAR(x, 1) = 100; // int x1 = 100;\nint VAR(x, 2) = 200; // int x2 = 200;'} />
+                    </TheoryCard>
                 </div>
             </div>
         </div>
     );
 };
 
-const NetworkPacket = () => {
+const StandardMacros = () => {
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Network size={20} className="text-blue-500" /> Real World: Network Packets
+                <FileText size={20} className="text-blue-500" /> Standard Predefined Macros
             </h3>
 
-            <div className="flex flex-col md:flex-row gap-8">
-                <div className="flex-1">
-                    <TheoryCard title="Packet Parsing" variant="blue">
-                        <p className="text-sm">
-                            Network protocols (like TCP/IP) send data as a stream of bytes.
-                            Unions allow us to define a "Packet Template" to overlay onto this raw stream, instantly parsing headers without math.
-                        </p>
-                    </TheoryCard>
-                </div>
-                <div className="flex-1 bg-muted p-4 rounded-xl border border-border">
-                    <CodeBlock title="IP Header Parser" code={'union IP_Packet {\n  struct {\n    char version;\n    char src_ip[4];\n    char dest_ip[4];\n    char data[20];\n  } header;\n  char raw_buffer[29];\n};'} />
-                    <div className="mt-2 text-xs text-muted-foreground text-center">
-                        Accessing <code>packet.raw_buffer</code> gives the byte stream.
-                        <br />Accessing <code>packet.header.version</code> gives the parsed value instantly.
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                    { name: "_DATE_", desc: "Current date as string" },
+                    { name: "_TIME_", desc: "Current time as string" },
+                    { name: "_FILE_", desc: "Current filename" },
+                    { name: "_LINE_", desc: "Current line number" }
+                ].map((m, i) => (
+                    <div key={i} className="bg-muted p-4 rounded-xl border border-border text-center hover:border-blue-500 transition-colors">
+                        <code className="text-blue-600 dark:text-blue-300 font-bold block mb-2">{m.name}</code>
+                        <p className="text-muted-foreground text-xs">{m.desc}</p>
                     </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const RegisterMap = () => {
-    const [reg, setReg] = useState(0);
-
-    const toggleBit = (bit: number) => {
-        setReg(prev => prev ^ (1 << bit));
-    };
-
-    return (
-        <div className="bg-card p-6 rounded-xl border border-border my-8">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Cpu size={20} className="text-red-500" /> Hardware Registers (Bit-Field Union)
-            </h3>
-
-            <div className="grid md:grid-cols-2 gap-12">
-                <div className="space-y-4">
-                    <TheoryCard title="Bit-Addressable Memory" variant="red">
-                        <p className="text-sm">
-                            In embedded systems (Arduino, STM32), we often need to access a full 8-bit register AND individual control bits simultaneously.
-                            A Union of a <code>byte</code> and a <code>struct</code> with bit-fields makes this easy.
-                        </p>
-                    </TheoryCard>
-
-                    <div className="flex items-center justify-between bg-black p-3 rounded border border-slate-800">
-                        <span className="text-slate-400 font-bold">Raw Value (Hex)</span>
-                        <span className="text-red-400 font-mono font-bold text-xl">0x{reg.toString(16).toUpperCase().padStart(2, '0')}</span>
-                    </div>
-                </div>
-
-                <div className="flex flex-col items-center justify-center">
-                    <div className="grid grid-cols-4 gap-2 mb-4">
-                        {[7, 6, 5, 4, 3, 2, 1, 0].map(i => (
-                            <button
-                                key={i}
-                                onClick={() => toggleBit(i)}
-                                className={`w-10 h-12 rounded border flex flex-col items-center justify-center transition-all ${(reg & (1 << i))
-                                    ? 'bg-red-600 border-red-400 text-white shadow-[0_0_10px_rgba(239,68,68,0.5)]'
-                                    : 'bg-muted border-border text-muted-foreground'
-                                    }`}
-                            >
-                                <span className="text-lg font-bold font-mono">{(reg & (1 << i)) ? 1 : 0}</span>
-                                <span className="text-[8px] mt-1">Bit {i}</span>
-                            </button>
-                        ))}
-                    </div>
-                    <div className="text-center text-xs text-muted-foreground">
-                        Union allows accessing <code>reg.byte</code> OR <code>reg.bits.bit3</code> instantly.
-                    </div>
-                </div>
+                ))}
             </div>
         </div>
     );
@@ -368,7 +363,7 @@ export default function Lecture4Page() {
                 <div className="flex items-center gap-3">
                     <img src="/cunitsLD/logo.png" alt="C-Units Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-500/20" />
                     <div className="hidden md:block">
-                        <h1 className="font-bold text-foreground text-sm leading-tight">Unions & Memory</h1>
+                        <h1 className="font-bold text-foreground text-sm leading-tight">The Preprocessor</h1>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Unit 6 • Lecture 4</p>
                     </div>
                 </div>
@@ -381,61 +376,59 @@ export default function Lecture4Page() {
 
                 {/* HERO */}
                 <div className="text-center space-y-6">
-                    <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 text-orange-600 dark:text-orange-300 px-4 py-1.5 rounded-full text-xs font-bold animate-fade-in-up">
-                        <Combine size={14} /> Shared Memory
+                    <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 px-4 py-1.5 rounded-full text-xs font-bold animate-fade-in-up">
+                        <Hash size={14} /> Meta-Programming
                     </div>
                     <h1 className="text-5xl md:text-7xl font-extrabold text-foreground tracking-tight">
-                        The <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-red-600 to-foreground dark:from-orange-400 dark:via-red-400 dark:to-white">Union</span> of Data
+                        The Code <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-600 to-foreground dark:from-blue-400 dark:via-cyan-400 dark:to-white">Before</span> The Code
                     </h1>
                     <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                        Structures place variables side-by-side. Unions stack them on top of each other.
-                        Powerful for saving memory, but dangerous if misunderstood.
+                        The Preprocessor runs before the compiler. It's a text-replacement engine that gives you power over how your code is built.
                     </p>
                 </div>
 
-                {/* SECTION 1: STRUCT VS UNION */}
+                {/* SECTION 1: MACROS */}
                 <section>
-                    <SectionHeader title="Struct vs Union" icon={Layers} color="blue" />
-                    <TheoryCard title="The Core Difference" variant="blue">
+                    <SectionHeader title="Macro Substitution" icon={Replace} color="blue" />
+                    <TheoryCard title="The #define Directive" variant="blue">
+                        <p className="mb-2">A macro is a fragment of code which has been given a name. Whenever the name is used, it is replaced by the contents of the macro.</p>
                         <ul className="list-disc pl-4 space-y-1 text-sm text-muted-foreground">
-                            <li><strong>Struct:</strong> Allocates memory for ALL members. Size = Sum of members (+ padding).</li>
-                            <li><strong>Union:</strong> Allocates memory for LARGEST member only. All members share the same start address.</li>
+                            <li><strong>Object-like:</strong> <code>#define PI 3.14</code> (Constant substitution).</li>
+                            <li><strong>Function-like:</strong> <code>#define SQ(x) ((x)*(x))</code> (Logic substitution).</li>
                         </ul>
                     </TheoryCard>
-                    <StructVsUnion />
+                    <SubstitutionEngine />
                 </section>
 
-                {/* SECTION 2: SAFE USAGE */}
+                {/* SECTION 2: CONDITIONAL COMPILATION */}
                 <section>
-                    <SectionHeader title="Safe Usage Patterns" icon={CheckCircle} color="green" />
+                    <SectionHeader title="Conditional Compilation" icon={ToggleLeft} color="orange" />
                     <p className="text-muted-foreground mb-8">
-                        Since unions hold only one value at a time, how do you track which one is active? Use a "Tag".
+                        You can selectively include or exclude blocks of code from being compiled using <code>#ifdef</code>, <code>#else</code>, and <code>#endif</code>.
                     </p>
-                    <TaggedUnionLab />
+                    <ConditionalLab />
                 </section>
 
-                {/* SECTION 3: SYSTEM LEVEL */}
+                {/* SECTION 3: MACROS VS FUNCTIONS */}
                 <section>
-                    <SectionHeader title="System Hacking: Endianness" icon={Binary} color="yellow" />
+                    <SectionHeader title="Macros vs Functions" icon={Settings} color="yellow" />
+                    <MacroVsFunc />
+                </section>
+
+                {/* SECTION 4: HEADER GUARDS */}
+                <section>
+                    <SectionHeader title="Header Guards" icon={ShieldCheck} color="green" />
                     <p className="text-muted-foreground mb-8">
-                        Unions allow us to bypass type safety and look at the raw bytes of an integer.
+                        Prevent "Multiple Definition" errors when a header file is included more than once (e.g., nested includes).
                     </p>
-                    <EndiannessInspector />
+                    <IncludeGuard />
                 </section>
 
-                {/* SECTION 4: REAL WORLD APPS */}
+                {/* SECTION 5: ADVANCED & STANDARD */}
                 <section>
-                    <SectionHeader title="Networking: Packet Parsing" icon={Network} color="blue" />
-                    <NetworkPacket />
-                </section>
-
-                {/* SECTION 5: HARDWARE */}
-                <section>
-                    <SectionHeader title="Hardware Registers" icon={Cpu} color="red" />
-                    <p className="text-muted-foreground mb-8">
-                        Combining Unions with Bit-Fields gives you ultimate control over hardware registers without bitwise math headaches.
-                    </p>
-                    <RegisterMap />
+                    <SectionHeader title="Advanced Preprocessor Features" icon={Scissors} color="pink" />
+                    <AdvancedMacros />
+                    <StandardMacros />
                 </section>
 
             </main>

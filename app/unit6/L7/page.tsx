@@ -2,18 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Zap,
-    ArrowRight,
-    List,
-    LayoutList,
-    Cpu,
+    Box,
+    RefreshCw,
+    Trash2,
+    Layers,
+    GitBranch,
     Settings,
-    Database,
-    Check,
-    X,
-    FileCode,
-    Braces,
-    TrafficCone
+    Play,
+    Package,
+    Plus,
+    Minus,
+    Archive,
+    Code
 } from 'lucide-react';
 import { ModeToggle } from '@/components/theme-toggle';
 
@@ -68,65 +68,94 @@ const TheoryCard = ({ title, children, variant = 'blue' }: { title: string, chil
 
 // --- INTERACTIVE COMPONENTS ---
 
-const InlineVisualizer = () => {
-    const [isInline, setIsInline] = useState(false);
+const LifecycleMonitor = () => {
+    const [objects, setObjects] = useState<{ id: number, type: string, status: 'born' | 'alive' | 'dying' }[]>([]);
+    const [log, setLog] = useState<string[]>([]);
+
+    const createObject = (type: string) => {
+        const id = Date.now();
+        setObjects(prev => [...prev, { id, type, status: 'born' }]);
+        setLog(prev => [`[CTOR] ${type} created (ID: ${id % 1000})`, ...prev]);
+
+        // Animate to alive
+        setTimeout(() => {
+            setObjects(prev => prev.map(o => o.id === id ? { ...o, status: 'alive' } : o));
+        }, 500);
+    };
+
+    const destroyObject = (id: number, type: string) => {
+        setObjects(prev => prev.map(o => o.id === id ? { ...o, status: 'dying' } : o));
+        setLog(prev => [`[DTOR] ${type} destroyed (ID: ${id % 1000})`, ...prev]);
+
+        // Remove after animation
+        setTimeout(() => {
+            setObjects(prev => prev.filter(o => o.id !== id));
+        }, 1000);
+    };
 
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Zap size={20} className="text-yellow-500" /> The Inline Engine
+                <RefreshCw size={20} className="text-green-500" /> Lifecycle Monitor (Constructors)
             </h3>
 
-            <div className="flex items-center gap-4 mb-8 bg-muted p-4 rounded-lg border border-border">
-                <span className="text-sm font-bold text-muted-foreground">Function Type:</span>
-                <button
-                    onClick={() => setIsInline(!isInline)}
-                    className={`px-4 py-2 rounded-lg font-bold text-xs transition-all flex items-center gap-2 ${isInline ? 'bg-yellow-500 text-white' : 'bg-slate-700 text-white dark:bg-slate-800'}`}
-                >
-                    {isInline ? <Check size={14} /> : <X size={14} />}
-                    {isInline ? "Inline (Expansion)" : "Normal (Function Call)"}
-                </button>
-            </div>
+            <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => createObject('Player')}
+                            className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition-transform active:scale-95 text-xs"
+                        >
+                            new Player()
+                        </button>
+                        <button
+                            onClick={() => createObject('Enemy')}
+                            className="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-lg transition-transform active:scale-95 text-xs"
+                        >
+                            new Enemy()
+                        </button>
+                    </div>
 
-            <div className="grid md:grid-cols-2 gap-12">
-                {/* Source Code */}
-                <div>
-                    <div className="text-xs text-muted-foreground uppercase font-bold mb-2">C++ Source</div>
-                    <div className="bg-muted p-4 rounded-lg border border-border font-mono text-sm">
-                        <div className={`${isInline ? 'text-yellow-500 font-bold' : 'text-muted-foreground'}`}>
-                            {isInline ? "inline " : ""}void printMsg() {'{'}
-                        </div>
-                        <div className="pl-4 text-green-500">cout &lt;&lt; "Hello";</div>
-                        <div>{'}'}</div>
-                        <br />
-                        <div>int main() {'{'}</div>
-                        <div className="pl-4 text-blue-500">printMsg();</div>
-                        <div>{'}'}</div>
+                    <CodeBlock title="Class Definition" code={`class Entity {\npublic:\n  Entity() { cout << "Born"; }\n  ~Entity() { cout << "Died"; }\n};`} />
+
+                    <div className="bg-black p-3 rounded-lg border border-slate-800 h-40 overflow-y-auto font-mono text-xs">
+                        {log.map((l, i) => (
+                            <div key={i} className={`mb-1 ${l.includes('CTOR') ? 'text-green-400' : 'text-red-400'}`}>
+                                {l}
+                            </div>
+                        ))}
+                        {log.length === 0 && <span className="text-slate-600">// Console Output...</span>}
                     </div>
                 </div>
 
-                {/* Compiled Behavior */}
-                <div>
-                    <div className="text-xs text-muted-foreground uppercase font-bold mb-2">Compiled Logic (Abstract)</div>
-                    <div className="bg-black p-4 rounded-lg border border-slate-800 font-mono text-sm relative overflow-hidden h-40 flex flex-col justify-center">
-                        {isInline ? (
-                            <div className="animate-in zoom-in duration-300">
-                                <div className="text-slate-500">int main() {'{'}</div>
-                                <div className="pl-4 text-green-400 font-bold bg-green-900/20 p-1 rounded border border-green-500/30">
-                                    cout &lt;&lt; "Hello"; <span className="text-xs text-slate-400 ml-2">// Copied body</span>
+                <div className="bg-muted p-4 rounded-xl border border-border relative min-h-[300px]">
+                    <div className="absolute top-2 right-2 text-[10px] font-bold text-muted-foreground uppercase">Scope Area</div>
+                    <div className="flex flex-col gap-3 mt-4">
+                        {objects.map(obj => (
+                            <div
+                                key={obj.id}
+                                className={`p-3 rounded-lg border flex justify-between items-center transition-all duration-500
+                  ${obj.status === 'born' ? 'bg-green-100 dark:bg-green-500/20 border-green-500 scale-90 opacity-0' : ''}
+                  ${obj.status === 'alive' ? 'bg-card border-border scale-100 opacity-100' : ''}
+                  ${obj.status === 'dying' ? 'bg-red-100 dark:bg-red-900/20 border-red-500 scale-90 opacity-0' : ''}
+                `}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Box size={16} className={obj.type === 'Player' ? 'text-blue-500' : 'text-red-500'} />
+                                    <span className="text-sm font-bold text-foreground">{obj.type} <span className="text-[10px] text-muted-foreground">#{obj.id % 1000}</span></span>
                                 </div>
-                                <div className="text-slate-500">{'}'}</div>
+                                <button
+                                    onClick={() => destroyObject(obj.id, obj.type)}
+                                    className="text-muted-foreground hover:text-red-500 transition-colors"
+                                    title="Destroy (Go out of scope)"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
                             </div>
-                        ) : (
-                            <div className="animate-in slide-in-from-left duration-300">
-                                <div className="text-slate-500">int main() {'{'}</div>
-                                <div className="pl-4 text-blue-400 font-bold flex items-center gap-2">
-                                    CALL 0x4002 <ArrowRight size={14} />
-                                </div>
-                                <div className="text-slate-500">{'}'}</div>
-                                <div className="mt-2 border-t border-slate-800 pt-2 text-xs text-slate-600">
-                                    0x4002: <span className="text-green-400">cout &lt;&lt; "Hello";</span> RET;
-                                </div>
+                        ))}
+                        {objects.length === 0 && (
+                            <div className="h-full flex items-center justify-center text-muted-foreground italic">
+                                Scope Empty
                             </div>
                         )}
                     </div>
@@ -136,220 +165,232 @@ const InlineVisualizer = () => {
     );
 };
 
-const EnumTraffic = () => {
-    const [light, setLight] = useState<'RED' | 'YELLOW' | 'GREEN'>('RED');
+const OverloadOracle = () => {
+    const [active, setActive] = useState<number | null>(null);
+
+    const functions = [
+        { id: 1, sig: "print()", desc: "No arguments" },
+        { id: 2, sig: "print(int i)", desc: "Integer argument" },
+        { id: 3, sig: "print(double f)", desc: "Floating point argument" },
+        { id: 4, sig: "print(char* s)", desc: "String argument" },
+    ];
 
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <TrafficCone size={20} className="text-orange-500" /> Enumerations (enum)
+                <GitBranch size={20} className="text-purple-500" /> The Overload Oracle
             </h3>
 
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                    <CodeBlock
-                        title="Enum Definition"
-                        code={`enum TrafficLight {\n  RED = 0,\n  YELLOW = 1,\n  GREEN = 2\n};\n\nTrafficLight current = ${light};`}
-                    />
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="space-y-4">
+                    <div className="text-sm text-muted-foreground mb-2">Click a call to match it to a definition:</div>
 
-                    <div className="flex gap-2 mt-4">
-                        {['RED', 'YELLOW', 'GREEN'].map(c => (
-                            <button
-                                key={c}
-                                onClick={() => setLight(c as any)}
-                                className={`flex-1 py-2 rounded font-bold text-xs transition-all border-b-4 active:border-b-0 active:translate-y-1
-                   ${c === 'RED' ? 'bg-red-600 border-red-800 text-white' : ''}
-                   ${c === 'YELLOW' ? 'bg-yellow-500 border-yellow-700 text-black' : ''}
-                   ${c === 'GREEN' ? 'bg-green-600 border-green-800 text-white' : ''}
-                   ${light === c ? 'brightness-110 shadow-lg' : 'opacity-50'}
-                 `}
-                            >
-                                {c}
-                            </button>
-                        ))}
-                    </div>
+                    <button
+                        onClick={() => setActive(1)}
+                        className={`w-full p-3 rounded-lg text-left font-mono text-sm border transition-all ${active === 1 ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-500 text-purple-600 dark:text-purple-300' : 'bg-muted border-border text-muted-foreground hover:border-slate-400'}`}
+                    >
+                        obj.print();
+                    </button>
+                    <button
+                        onClick={() => setActive(2)}
+                        className={`w-full p-3 rounded-lg text-left font-mono text-sm border transition-all ${active === 2 ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 text-blue-600 dark:text-blue-300' : 'bg-muted border-border text-muted-foreground hover:border-slate-400'}`}
+                    >
+                        obj.print(42);
+                    </button>
+                    <button
+                        onClick={() => setActive(3)}
+                        className={`w-full p-3 rounded-lg text-left font-mono text-sm border transition-all ${active === 3 ? 'bg-orange-100 dark:bg-orange-900/30 border-orange-500 text-orange-600 dark:text-orange-300' : 'bg-muted border-border text-muted-foreground hover:border-slate-400'}`}
+                    >
+                        obj.print(3.14);
+                    </button>
+                    <button
+                        onClick={() => setActive(4)}
+                        className={`w-full p-3 rounded-lg text-left font-mono text-sm border transition-all ${active === 4 ? 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-600 dark:text-green-300' : 'bg-muted border-border text-muted-foreground hover:border-slate-400'}`}
+                    >
+                        obj.print("Hello");
+                    </button>
                 </div>
 
-                <div className="flex flex-col items-center justify-center bg-black p-6 rounded-xl border border-slate-800">
-                    <div className="bg-slate-800 p-3 rounded-2xl border-4 border-slate-600 flex flex-col gap-3 shadow-2xl">
-                        <div className={`w-12 h-12 rounded-full border-2 border-black transition-all duration-300 ${light === 'RED' ? 'bg-red-500 shadow-[0_0_20px_#ef4444]' : 'bg-red-900/20'}`}></div>
-                        <div className={`w-12 h-12 rounded-full border-2 border-black transition-all duration-300 ${light === 'YELLOW' ? 'bg-yellow-400 shadow-[0_0_20px_#eab308]' : 'bg-yellow-900/20'}`}></div>
-                        <div className={`w-12 h-12 rounded-full border-2 border-black transition-all duration-300 ${light === 'GREEN' ? 'bg-green-500 shadow-[0_0_20px_#22c55e]' : 'bg-green-900/20'}`}></div>
-                    </div>
-                    <div className="mt-4 text-center">
-                        <div className="text-xs text-slate-500 uppercase font-bold">Integer Value</div>
-                        <div className="text-2xl font-mono text-white">
-                            {light === 'RED' ? 0 : light === 'YELLOW' ? 1 : 2}
+                <div className="bg-black p-6 rounded-xl border border-slate-800 relative min-h-[250px] flex flex-col justify-center gap-4">
+                    <div className="absolute top-2 left-2 text-[10px] font-bold text-slate-500 uppercase">Function Definitions</div>
+
+                    {functions.map(f => (
+                        <div
+                            key={f.id}
+                            className={`p-3 rounded border font-mono text-sm transition-all duration-300 
+                ${active === f.id
+                                    ? 'bg-slate-800 border-white scale-105 shadow-xl opacity-100'
+                                    : 'bg-slate-900/50 border-slate-800 opacity-40 blur-[1px]'
+                                }
+              `}
+                        >
+                            <span className="text-yellow-400">void</span> {f.sig} {'{'} ... {'}'}
+                            {active === f.id && (
+                                <div className="text-[10px] text-slate-400 mt-1 font-sans">{f.desc}</div>
+                            )}
+                        </div>
+                    ))}
+
+                    {!active && <div className="absolute inset-0 flex items-center justify-center text-slate-600 text-sm">Select a call...</div>}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const DefaultArgLab = () => {
+    const [width, setWidth] = useState<number | undefined>(undefined);
+    const [height, setHeight] = useState<number | undefined>(undefined);
+
+    // Logic: Default width=10, height=20
+    const finalW = width !== undefined ? width : 10;
+    const finalH = height !== undefined ? height : 20;
+
+    return (
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <Settings size={20} className="text-yellow-500" /> Default Arguments
+            </h3>
+
+            <div className="mb-6 bg-muted p-3 rounded-lg border border-border text-center">
+                <code className="text-sm font-mono text-muted-foreground">
+                    void resize(<span className="text-blue-500">int w = 10</span>, <span className="text-purple-500">int h = 20</span>);
+                </code>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-12">
+                <div className="space-y-6">
+                    <div>
+                        <label className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase mb-2">
+                            <span>Width Argument</span>
+                            <span className={width !== undefined ? "text-blue-500" : "text-muted-foreground"}>{width !== undefined ? "Provided" : "Missing"}</span>
+                        </label>
+                        <div className="flex gap-2">
+                            <button onClick={() => setWidth(50)} className={`flex-1 py-2 rounded text-xs font-bold border ${width === 50 ? 'bg-blue-600 text-white border-blue-500' : 'bg-muted border-border text-muted-foreground'}`}>Pass 50</button>
+                            <button onClick={() => setWidth(undefined)} className={`flex-1 py-2 rounded text-xs font-bold border ${width === undefined ? 'bg-slate-600 text-white border-slate-500' : 'bg-muted border-border text-muted-foreground'}`}>Don't Pass</button>
                         </div>
                     </div>
+
+                    <div>
+                        <label className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase mb-2">
+                            <span>Height Argument</span>
+                            <span className={height !== undefined ? "text-purple-500" : "text-muted-foreground"}>{height !== undefined ? "Provided" : "Missing"}</span>
+                        </label>
+                        <div className="flex gap-2">
+                            <button onClick={() => setHeight(80)} className={`flex-1 py-2 rounded text-xs font-bold border ${height === 80 ? 'bg-purple-600 text-white border-purple-500' : 'bg-muted border-border text-muted-foreground'}`}>Pass 80</button>
+                            <button onClick={() => setHeight(undefined)} className={`flex-1 py-2 rounded text-xs font-bold border ${height === undefined ? 'bg-slate-600 text-white border-slate-500' : 'bg-muted border-border text-muted-foreground'}`}>Don't Pass</button>
+                        </div>
+                    </div>
+
+                    <div className="p-3 bg-black rounded border border-slate-800 font-mono text-sm text-center">
+                        Function Call: <br />
+                        <span className="text-yellow-400">resize(
+                            {width !== undefined ? width : ""}
+                            {width !== undefined && height !== undefined ? ", " : ""}
+                            {height !== undefined ? height : ""}
+                            );</span>
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-center bg-muted rounded-xl border border-border relative">
+                    <div
+                        className="bg-yellow-500/20 border-2 border-yellow-500 rounded flex items-center justify-center text-yellow-500 font-bold transition-all duration-500 relative"
+                        style={{ width: `${finalW * 2}px`, height: `${finalH * 2}px` }}
+                    >
+                        {finalW}x{finalH}
+
+                        {/* Origin Indicators */}
+                        {width === undefined && (
+                            <div className="absolute -top-6 left-0 text-[10px] text-blue-400 bg-blue-900/20 px-1 rounded">Default W</div>
+                        )}
+                        {height === undefined && (
+                            <div className="absolute -right-16 top-1/2 -translate-y-1/2 text-[10px] text-purple-400 bg-purple-900/20 px-1 rounded">Default H</div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
     );
 };
 
-const ScopeResolution = () => {
-    const [method, setMethod] = useState<'inside' | 'outside'>('outside');
+const InventorySystem = () => {
+    const [items, setItems] = useState<{ name: string, qty: number }[]>([]);
+    const [logs, setLogs] = useState<string[]>([]);
+
+    const addItem = (name: string, qty: number = 1) => {
+        setItems(prev => {
+            const existing = prev.find(i => i.name === name);
+            if (existing) {
+                setLogs(l => [`Updated ${name}: ${existing.qty} -> ${existing.qty + qty}`, ...l]);
+                return prev.map(i => i.name === name ? { ...i, qty: i.qty + qty } : i);
+            }
+            setLogs(l => [`[CTOR] Created new Item: ${name} (${qty})`, ...l]);
+            return [...prev, { name, qty }];
+        });
+    };
+
+    const removeItem = (name: string) => {
+        setItems(prev => {
+            const exists = prev.find(i => i.name === name);
+            if (exists) setLogs(l => [`[DTOR] Destroyed Item: ${name}`, ...l]);
+            return prev.filter(i => i.name !== name);
+        });
+    };
 
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Settings size={20} className="text-purple-500" /> Scope Resolution (::)
-            </h3>
-
-            <div className="flex justify-center gap-4 mb-8">
-                <button
-                    onClick={() => setMethod('inside')}
-                    className={`px-4 py-2 rounded-lg font-bold text-xs transition-all border ${method === 'inside' ? 'bg-blue-600 border-blue-400 text-white' : 'bg-muted border-border text-muted-foreground'}`}
-                >
-                    Inside Class (Inline)
-                </button>
-                <button
-                    onClick={() => setMethod('outside')}
-                    className={`px-4 py-2 rounded-lg font-bold text-xs transition-all border ${method === 'outside' ? 'bg-purple-600 border-purple-400 text-white' : 'bg-muted border-border text-muted-foreground'}`}
-                >
-                    Outside Class (::)
-                </button>
-            </div>
-
-            <div className="relative bg-muted p-6 rounded-xl border border-border font-mono text-sm">
-                <div className="text-purple-500">class <span className="text-yellow-500">Demo</span> {'{'}</div>
-                <div className="pl-4 text-green-500">public:</div>
-
-                {method === 'inside' ? (
-                    <div className="pl-8 animate-in fade-in">
-                        <span className="text-blue-500">void display()</span> {'{'}<br />
-                        &nbsp;&nbsp;<span className="text-muted-foreground">cout &lt;&lt; "Hi";</span><br />
-                        {'}'}
-                    </div>
-                ) : (
-                    <div className="pl-8 animate-in fade-in">
-                        <span className="text-blue-500">void display();</span> <span className="text-muted-foreground">// Declaration only</span>
-                    </div>
-                )}
-
-                <div className="text-purple-500">{'}'};</div>
-
-                {method === 'outside' && (
-                    <div className="mt-4 pt-4 border-t border-border animate-in slide-in-from-bottom-2">
-                        <span className="text-muted-foreground">// Definition outside class</span><br />
-                        <span className="text-blue-500">void</span> <span className="text-yellow-500">Demo</span><span className="text-red-500">::</span><span className="text-blue-500">display()</span> {'{'}<br />
-                        &nbsp;&nbsp;<span className="text-muted-foreground">cout &lt;&lt; "Hi";</span><br />
-                        {'}'}
-                    </div>
-                )}
-            </div>
-
-            <div className="mt-4 text-center text-xs text-muted-foreground">
-                {method === 'outside'
-                    ? "The :: operator tells the compiler that 'display' belongs to the 'Demo' class."
-                    : "Functions defined inside are implicitly treated as inline."}
-            </div>
-        </div>
-    );
-};
-
-const ObjectArray = () => {
-    const [students, setStudents] = useState([
-        { id: 1, name: "Alex" },
-        { id: 2, name: "Ben" },
-        { id: 3, name: "Clara" }
-    ]);
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-    return (
-        <div className="bg-card p-6 rounded-xl border border-border my-8">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Database size={20} className="text-blue-500" /> Array of Objects
+                <Archive size={20} className="text-blue-500" /> Capstone: Inventory Manager
             </h3>
 
             <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                    <CodeBlock title="C++ Syntax" code={`class Student {\n  int id;\n  string name;\n  // ...\n};\n\n// Array of 3 Objects\nStudent list[3];`} />
-                    <p className="text-xs text-muted-foreground mt-2">
-                        Just like arrays of ints or structs, you can create arrays of Class Objects.
-                        They are stored contiguously in memory.
-                    </p>
-                </div>
+                <div className="space-y-4">
+                    <div className="p-4 bg-muted rounded-xl border border-border">
+                        <div className="text-xs font-bold text-muted-foreground uppercase mb-3">Control Panel</div>
+                        <div className="grid grid-cols-2 gap-2">
+                            <button onClick={() => addItem("Potion")} className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 border border-blue-500/50 p-2 rounded text-xs hover:bg-blue-200 dark:hover:bg-blue-900/50">
+                                Add Potion (Default 1)
+                            </button>
+                            <button onClick={() => addItem("Potion", 5)} className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 border border-blue-500/50 p-2 rounded text-xs hover:bg-blue-200 dark:hover:bg-blue-900/50">
+                                Add Potion (x5)
+                            </button>
+                            <button onClick={() => addItem("Sword")} className="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 border border-purple-500/50 p-2 rounded text-xs hover:bg-purple-200 dark:hover:bg-purple-900/50">
+                                Add Sword (Default 1)
+                            </button>
+                            <button onClick={() => addItem("Shield")} className="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-300 border border-orange-500/50 p-2 rounded text-xs hover:bg-orange-200 dark:hover:bg-orange-900/50">
+                                Add Shield (Default 1)
+                            </button>
+                        </div>
 
-                <div className="space-y-2">
-                    <div className="flex justify-between text-xs text-muted-foreground font-bold uppercase mb-1 px-1">
-                        <span>Index</span>
-                        <span>Object Data</span>
-                    </div>
-                    {students.map((s, i) => (
-                        <div
-                            key={s.id}
-                            className={`flex items-center p-3 rounded-lg border-2 transition-all cursor-pointer
-                 ${activeIndex === i ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 scale-105' : 'bg-muted border-border hover:border-slate-400 dark:hover:border-slate-600'}
-               `}
-                            onMouseEnter={() => setActiveIndex(i)}
-                            onMouseLeave={() => setActiveIndex(null)}
-                        >
-                            <div className="w-8 h-8 rounded bg-background flex items-center justify-center font-bold text-muted-foreground mr-4 border border-border font-mono">
-                                [{i}]
-                            </div>
-                            <div className="flex-1">
-                                <div className="text-xs text-blue-500 font-bold">Student Object</div>
-                                <div className="text-xs text-muted-foreground font-mono">id: {s.id}, name: "{s.name}"</div>
+                        <div className="mt-4 pt-4 border-t border-border">
+                            <div className="text-xs font-bold text-muted-foreground uppercase mb-2">System Log</div>
+                            <div className="h-32 overflow-y-auto font-mono text-[10px] text-muted-foreground space-y-1">
+                                {logs.map((l, i) => (
+                                    <div key={i}>{l}</div>
+                                ))}
                             </div>
                         </div>
-                    ))}
+                    </div>
                 </div>
-            </div>
-        </div>
-    );
-};
 
-const FeatureComparison = () => {
-    return (
-        <div className="bg-card p-6 rounded-xl border border-border my-8">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <LayoutList size={20} className="text-green-500" /> Ultimate Comparison
-            </h3>
-
-            <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm text-muted-foreground">
-                    <thead className="bg-muted text-xs uppercase font-bold text-muted-foreground">
-                        <tr>
-                            <th className="px-4 py-3">Property</th>
-                            <th className="px-4 py-3 text-blue-500">Structure</th>
-                            <th className="px-4 py-3 text-orange-500">Union</th>
-                            <th className="px-4 py-3 text-yellow-500">Enumeration</th>
-                            <th className="px-4 py-3 text-purple-500">Class</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                        <tr className="hover:bg-muted/50">
-                            <td className="px-4 py-3 font-bold">Concept</td>
-                            <td className="px-4 py-3">Group of Variables</td>
-                            <td className="px-4 py-3">Shared Memory</td>
-                            <td className="px-4 py-3">Named Constants</td>
-                            <td className="px-4 py-3">Data + Functions</td>
-                        </tr>
-                        <tr className="hover:bg-muted/50">
-                            <td className="px-4 py-3 font-bold">Keyword</td>
-                            <td className="px-4 py-3 font-mono">struct</td>
-                            <td className="px-4 py-3 font-mono">union</td>
-                            <td className="px-4 py-3 font-mono">enum</td>
-                            <td className="px-4 py-3 font-mono">class</td>
-                        </tr>
-                        <tr className="hover:bg-muted/50">
-                            <td className="px-4 py-3 font-bold">Memory</td>
-                            <td className="px-4 py-3">Sum of members</td>
-                            <td className="px-4 py-3">Largest member</td>
-                            <td className="px-4 py-3">int size (4B)</td>
-                            <td className="px-4 py-3">Sum of members</td>
-                        </tr>
-                        <tr className="hover:bg-muted/50">
-                            <td className="px-4 py-3 font-bold">Default Access</td>
-                            <td className="px-4 py-3 text-green-500">Public</td>
-                            <td className="px-4 py-3 text-green-500">Public</td>
-                            <td className="px-4 py-3 text-green-500">Public</td>
-                            <td className="px-4 py-3 text-red-500">Private</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div className="bg-background p-4 rounded-xl border border-border min-h-[300px]">
+                    <div className="text-xs font-bold text-muted-foreground uppercase mb-4">Inventory Storage</div>
+                    <div className="space-y-2">
+                        {items.map(item => (
+                            <div key={item.name} className="flex items-center justify-between p-3 bg-muted rounded border border-border animate-in slide-in-from-right">
+                                <div className="flex items-center gap-3">
+                                    <Package size={16} className="text-muted-foreground" />
+                                    <span className="text-foreground font-bold text-sm">{item.name}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-black px-2 py-1 rounded text-xs text-green-400 font-mono">x{item.qty}</div>
+                                    <button onClick={() => removeItem(item.name)} className="text-red-400 hover:text-red-300"><Trash2 size={14} /></button>
+                                </div>
+                            </div>
+                        ))}
+                        {items.length === 0 && <div className="text-center text-muted-foreground italic mt-10">Inventory Empty</div>}
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -366,7 +407,7 @@ export default function Lecture7Page() {
                 <div className="flex items-center gap-3">
                     <img src="/cunitsLD/logo.png" alt="C-Units Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-purple-500/20" />
                     <div className="hidden md:block">
-                        <h1 className="font-bold text-foreground text-sm leading-tight">Advanced Mechanics</h1>
+                        <h1 className="font-bold text-foreground text-sm leading-tight">Object Lifecycle & Overloading</h1>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Unit 6 • Lecture 7</p>
                     </div>
                 </div>
@@ -380,72 +421,64 @@ export default function Lecture7Page() {
                 {/* HERO */}
                 <div className="text-center space-y-6">
                     <div className="inline-flex items-center gap-2 bg-purple-100 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-500/30 text-purple-600 dark:text-purple-300 px-4 py-1.5 rounded-full text-xs font-bold animate-fade-in-up">
-                        <Cpu size={14} /> Language Features
+                        <Settings size={14} /> Advanced Features
                     </div>
                     <h1 className="text-5xl md:text-7xl font-extrabold text-foreground tracking-tight">
-                        Under the <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-foreground dark:to-white">Hood</span>
+                        The <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-foreground dark:to-white">Intelligence</span> of Objects
                     </h1>
                     <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                        Understanding how C++ handles member placement, memory, and constants distinguishes a coder from an engineer.
+                        Objects aren't just data structures; they have a lifecycle. They are born (Constructors), they adapt (Overloading), and they die (Destructors).
                     </p>
                 </div>
 
-                {/* SECTION 1: INLINE FUNCTIONS */}
+                {/* SECTION 1: LIFECYCLE */}
                 <section>
-                    <SectionHeader title="Inline Functions" icon={Zap} color="yellow" />
-                    <TheoryCard title="The Speed Trade-off" variant="yellow">
+                    <SectionHeader title="Object Lifecycle" icon={RefreshCw} color="green" />
+                    <TheoryCard title="Constructors & Destructors" variant="green">
+                        <ul className="list-disc pl-4 space-y-1 text-sm text-muted-foreground">
+                            <li><strong>Constructor:</strong> A special method with the same name as the class. Called automatically when an object is created. Used for initialization.</li>
+                            <li><strong>Destructor:</strong> Same name with a `~` prefix. Called automatically when an object goes out of scope. Used for cleanup.</li>
+                        </ul>
+                    </TheoryCard>
+                    <LifecycleMonitor />
+                </section>
+
+                {/* SECTION 2: OVERLOADING */}
+                <section>
+                    <SectionHeader title="Function Overloading" icon={GitBranch} color="purple" />
+                    <p className="text-muted-foreground mb-8">
+                        C++ allows multiple functions to share the same name as long as their **signatures** (parameter types/counts) are different. This is called Compile-Time Polymorphism.
+                    </p>
+                    <OverloadOracle />
+                </section>
+
+                {/* SECTION 3: DEFAULT ARGUMENTS */}
+                <section>
+                    <SectionHeader title="Default Arguments" icon={Settings} color="yellow" />
+                    <TheoryCard title="Optional Parameters" variant="yellow">
                         <p className="text-sm">
-                            The <code>inline</code> keyword suggests the compiler to insert the function's body directly at the call site.
+                            You can provide default values for function parameters. If the caller omits them, the default is used.
                             <br /><br />
-                            <strong>Benefit:</strong> No function call overhead (stack push/pop).
-                            <br />
-                            <strong>Cost:</strong> Increases binary size (Code Bloat).
+                            <strong>Rule:</strong> Default arguments must be trailing (at the end of the list).
                         </p>
                     </TheoryCard>
-                    <InlineVisualizer />
+                    <DefaultArgLab />
                 </section>
 
-                {/* SECTION 2: SCOPE RESOLUTION */}
+                {/* SECTION 4: CAPSTONE */}
                 <section>
-                    <SectionHeader title="Scope Resolution" icon={Settings} color="purple" />
+                    <SectionHeader title="Capstone: Inventory System" icon={Archive} color="blue" />
                     <p className="text-muted-foreground mb-8">
-                        Defining functions inside the class keeps it self-contained, but defining them outside keeps the header file clean. The <code>::</code> operator connects them.
+                        Putting it all together: A class-based system using constructors for item creation, destructors for removal, and overloading for flexible "Add" commands.
                     </p>
-                    <ScopeResolution />
-                </section>
-
-                {/* SECTION 3: ENUMS */}
-                <section>
-                    <SectionHeader title="Enumerations" icon={List} color="orange" />
-                    <TheoryCard title="Named Constants" variant="orange">
-                        <p className="text-sm">
-                            Enums make code readable. Instead of passing <code>0</code>, <code>1</code>, or <code>2</code>,
-                            you pass <code>RED</code>, <code>YELLOW</code>, or <code>GREEN</code>. Internally, they are still integers.
-                        </p>
-                    </TheoryCard>
-                    <EnumTraffic />
-                </section>
-
-                {/* SECTION 4: OBJECT ARRAYS */}
-                <section>
-                    <SectionHeader title="Array of Objects" icon={Database} color="blue" />
-                    <p className="text-muted-foreground mb-8">
-                        You can create arrays of objects just like primitive types. Each element in the array is a full object with its own data members.
-                    </p>
-                    <ObjectArray />
-                </section>
-
-                {/* SECTION 5: COMPARISON */}
-                <section>
-                    <SectionHeader title="Data Types Face-off" icon={LayoutList} color="green" />
-                    <FeatureComparison />
+                    <InventorySystem />
                 </section>
 
             </main>
 
             {/* FOOTER */}
             <footer className="mt-32 border-t border-border bg-background py-12 text-center text-muted-foreground text-sm">
-                <p>C Programming Course • Unit 6 • C++ Advanced</p>
+                <p>C Programming Course • Unit 6 • Lecture 7</p>
             </footer>
         </div>
     );

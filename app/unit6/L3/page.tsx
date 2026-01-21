@@ -2,21 +2,21 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Database,
+    Combine,
     Layers,
+    AlertTriangle,
+    Database,
+    Binary,
     ArrowRight,
-    Code,
-    Box,
-    MapPin,
-    Users,
-    MousePointer,
-    Link,
-    List,
-    ArrowLeftRight,
-    Minimize2,
     Cpu,
-    FileDigit,
-    AlertTriangle
+    Monitor,
+    CheckCircle,
+    XCircle,
+    Box,
+    LayoutGrid,
+    Network,
+    FileCode,
+    BookOpen
 } from 'lucide-react';
 import { ModeToggle } from '@/components/theme-toggle';
 
@@ -71,315 +71,159 @@ const TheoryCard = ({ title, children, variant = 'blue' }: { title: string, chil
 
 // --- INTERACTIVE COMPONENTS ---
 
-const ArrayOfStructs = () => {
-    const [students, setStudents] = useState([
-        { id: 101, name: "Alice", marks: 85 },
-        { id: 102, name: "Bob", marks: 92 },
-        { id: 103, name: "Charlie", marks: 78 }
-    ]);
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+const StructVsUnion = () => {
+    const [mode, setMode] = useState<'struct' | 'union'>('struct');
+    const [intVal, setIntVal] = useState(65);
+    const [charVal, setCharVal] = useState('A');
+    const [floatVal, setFloatVal] = useState(1.5);
+
+    const handleIntChange = (v: number) => {
+        setIntVal(v);
+        if (mode === 'union') {
+            // In union, all members share memory. Approximating the effect.
+            setCharVal(String.fromCharCode(v % 256));
+            setFloatVal(v); // Not accurate bitwise rep, but shows "clobbering"
+        }
+    };
 
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Users size={20} className="text-blue-500" /> Array of Structures
-            </h3>
-
-            <div className="grid md:grid-cols-2 gap-8 items-start">
-                <div>
-                    <TheoryCard title="The Concept" variant="blue">
-                        <p>
-                            Just like <code>int arr[10]</code> creates 10 integers,
-                            <code>struct Student list[3]</code> creates 3 distinct Student structures in contiguous memory.
-                        </p>
-                    </TheoryCard>
-
-                    <CodeBlock title="Declaration" code={'struct Student list[3] = {\n  {101, "Alice", 85},\n  {102, "Bob", 92},\n  {103, "Charlie", 78}\n};'} />
-
-                    <div className="mt-4 p-4 bg-muted rounded-xl border border-border">
-                        <div className="text-xs text-muted-foreground uppercase font-bold mb-2">Access Pattern</div>
-                        <code className="text-sm font-mono text-green-600 dark:text-green-400">
-                            list[{activeIndex !== null ? activeIndex : 'i'}].name
-                        </code>
-                    </div>
-                </div>
-
-                <div className="space-y-2">
-                    <div className="text-xs text-muted-foreground font-bold uppercase text-center mb-2">Memory View (Contiguous)</div>
-                    {students.map((s, i) => (
-                        <div
-                            key={s.id}
-                            className={`flex items-center p-3 rounded-lg border-2 transition-all cursor-pointer
-                 ${activeIndex === i ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 scale-105' : 'bg-muted border-border hover:border-muted-foreground/50'}
-               `}
-                            onMouseEnter={() => setActiveIndex(i)}
-                            onMouseLeave={() => setActiveIndex(null)}
-                        >
-                            <div className="w-8 h-8 rounded bg-card flex items-center justify-center font-bold text-muted-foreground mr-4 border border-border">
-                                {i}
-                            </div>
-                            <div className="flex-1 grid grid-cols-3 gap-2 text-sm font-mono">
-                                <div className="text-orange-500">ID: {s.id}</div>
-                                <div className="text-foreground">"{s.name}"</div>
-                                <div className="text-green-600 dark:text-green-400">{s.marks}</div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const NestedStructs = () => {
-    const [hover, setHover] = useState<'outer' | 'inner' | null>(null);
-
-    return (
-        <div className="bg-card p-6 rounded-xl border border-border my-8">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Box size={20} className="text-purple-500" /> Nested Structures
-            </h3>
-
-            <div className="grid md:grid-cols-2 gap-12">
-                <div className="relative p-8 border-4 border-muted rounded-xl bg-card" onMouseEnter={() => setHover('outer')} onMouseLeave={() => setHover(null)}>
-                    <div className={`absolute top-0 left-0 bg-muted px-3 py-1 rounded-br-xl text-xs font-bold uppercase transition-colors ${hover === 'outer' ? 'text-purple-500' : 'text-muted-foreground'}`}>
-                        struct Employee
-                    </div>
-
-                    <div className="space-y-4 mt-4">
-                        <div className="p-3 bg-muted/50 rounded border border-border flex justify-between">
-                            <span className="text-muted-foreground text-sm">char name[]</span>
-                            <span className="text-foreground font-mono">"John"</span>
-                        </div>
-                        <div className="p-3 bg-muted/50 rounded border border-border flex justify-between">
-                            <span className="text-muted-foreground text-sm">float salary</span>
-                            <span className="text-foreground font-mono">50000.0</span>
-                        </div>
-
-                        {/* Inner Struct */}
-                        <div
-                            className={`p-4 border-2 rounded-xl bg-muted/20 transition-colors ${hover === 'inner' ? 'border-orange-500' : 'border-border'}`}
-                            onMouseEnter={(e) => { e.stopPropagation(); setHover('inner'); }}
-                            onMouseLeave={() => setHover('outer')}
-                        >
-                            <div className={`text-xs font-bold uppercase mb-2 ${hover === 'inner' ? 'text-orange-500' : 'text-muted-foreground'}`}>
-                                struct Address addr
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-xs">
-                                    <span className="text-muted-foreground">char city[]</span>
-                                    <span className="text-orange-500 dark:text-orange-200">"NY"</span>
-                                </div>
-                                <div className="flex justify-between text-xs">
-                                    <span className="text-muted-foreground">int pin</span>
-                                    <span className="text-orange-500 dark:text-orange-200">10001</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex flex-col justify-center gap-4">
-                    <TheoryCard title="Box inside a Box" variant="purple">
-                        <p>You can define a structure as a member of another structure.</p>
-                    </TheoryCard>
-
-                    <div className="bg-black/5 dark:bg-black/40 p-4 rounded-xl border border-border">
-                        <div className="text-xs text-muted-foreground font-bold uppercase mb-2">Accessing Nested Members</div>
-                        <div className="font-mono text-lg text-foreground">
-                            emp.<span className={`transition-colors ${hover === 'inner' ? 'text-orange-500' : 'text-muted-foreground'}`}>addr</span>.city
-                        </div>
-                        <div className="mt-2 text-xs text-muted-foreground">
-                            Use multiple dot operators to drill down.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const ArrowOperator = () => {
-    const [notation, setNotation] = useState<'dot' | 'arrow'>('arrow');
-
-    return (
-        <div className="bg-card p-6 rounded-xl border border-border my-8">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <MousePointer size={20} className="text-green-500" /> Pointers to Structures
-            </h3>
-
-            <div className="flex gap-4 mb-8 justify-center">
-                <button
-                    onClick={() => setNotation('dot')}
-                    className={`px-4 py-2 rounded-full font-bold text-sm transition-all ${notation === 'dot' ? 'bg-slate-700 text-white' : 'bg-muted text-muted-foreground'}`}
-                >
-                    Dot Syntax (*p).x
-                </button>
-                <button
-                    onClick={() => setNotation('arrow')}
-                    className={`px-4 py-2 rounded-full font-bold text-sm transition-all ${notation === 'arrow' ? 'bg-green-600 text-white' : 'bg-muted text-muted-foreground'}`}
-                >
-                    Arrow Syntax p-&gt;x
-                </button>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-                <div className="relative">
-                    {/* Pointer */}
-                    <div className="absolute top-0 left-0 bg-blue-100 dark:bg-blue-900/30 border border-blue-500 p-2 rounded text-center w-24">
-                        <div className="text-[10px] text-blue-600 dark:text-blue-300 font-bold">struct Point *p</div>
-                        <div className="text-sm font-mono text-foreground">0x500</div>
-                    </div>
-
-                    {/* Arrow SVG */}
-                    <svg className="absolute top-8 left-12 w-24 h-24 pointer-events-none">
-                        <path d="M 12 0 Q 12 50 80 80" fill="none" stroke="#4ade80" strokeWidth="2" markerEnd="url(#arrowhead)" />
-                        <defs>
-                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                                <polygon points="0 0, 10 3.5, 0 7" fill="#4ade80" />
-                            </marker>
-                        </defs>
-                    </svg>
-
-                    {/* Struct */}
-                    <div className="mt-24 ml-24 bg-muted p-4 rounded-xl border-2 border-border w-40">
-                        <div className="text-[10px] text-muted-foreground font-bold uppercase mb-2 text-center">Address: 0x500</div>
-                        <div className="space-y-2">
-                            <div className="flex justify-between text-sm border-b border-border pb-1">
-                                <span className="text-muted-foreground">x</span> <span className="text-foreground">10</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">y</span> <span className="text-foreground">20</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div className="bg-black/5 dark:bg-black/40 p-6 rounded-xl border border-border text-center">
-                        <div className="text-xs text-muted-foreground font-bold uppercase mb-4">Code Representation</div>
-                        <div className="text-2xl font-mono text-green-600 dark:text-green-400 font-bold">
-                            {notation === 'dot' ? "(*p).x" : "p->x"}
-                        </div>
-                        <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                            {notation === 'dot'
-                                ? "We must dereference (*) first, then use dot (.). Parentheses are mandatory due to precedence!"
-                                : "The arrow operator (->) automatically dereferences the pointer and accesses the member. Much cleaner!"}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const FunctionStructs = () => {
-    const [mode, setMode] = useState<'value' | 'ref'>('value');
-
-    return (
-        <div className="bg-card p-6 rounded-xl border border-border my-8">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <ArrowLeftRight size={20} className="text-red-500" /> Functions & Efficiency
+                <Combine size={20} className="text-blue-500" /> Struct vs Union: The Memory War
             </h3>
 
             <div className="flex justify-center gap-4 mb-8">
                 <button
-                    onClick={() => setMode('value')}
-                    className={`px-6 py-2 rounded-lg font-bold text-sm transition-all border-2 ${mode === 'value' ? 'bg-red-100 dark:bg-red-900/30 border-red-500 text-red-600 dark:text-white' : 'bg-muted border-border text-muted-foreground'}`}
+                    onClick={() => setMode('struct')}
+                    className={`px-6 py-2 rounded-lg font-bold transition-all border-2 ${mode === 'struct' ? 'bg-blue-600 border-blue-400 text-white' : 'bg-muted border-border text-muted-foreground'}`}
                 >
-                    Pass by Value (Copy)
+                    Struct (Separate Memory)
                 </button>
                 <button
-                    onClick={() => setMode('ref')}
-                    className={`px-6 py-2 rounded-lg font-bold text-sm transition-all border-2 ${mode === 'ref' ? 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-600 dark:text-white' : 'bg-muted border-border text-muted-foreground'}`}
+                    onClick={() => setMode('union')}
+                    className={`px-6 py-2 rounded-lg font-bold transition-all border-2 ${mode === 'union' ? 'bg-orange-600 border-orange-400 text-white' : 'bg-muted border-border text-muted-foreground'}`}
                 >
-                    Pass by Reference (Ptr)
+                    Union (Shared Memory)
                 </button>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-                <div>
-                    <CodeBlock
-                        title={mode === 'value' ? "Inefficient Code" : "Optimized Code"}
-                        code={mode === 'value'
-                            ? 'void print(struct BigData d) {\n  // Receives a massive COPY\n  // Uses 1000 bytes stack\n}'
-                            : 'void print(struct BigData *d) {\n  // Receives just an ADDRESS\n  // Uses 8 bytes stack\n}'}
-                    />
-                    <div className="mt-4 p-4 rounded-xl border border-border bg-muted text-sm text-muted-foreground">
-                        {mode === 'value'
-                            ? "Passing by value copies every single member. If the struct is large (e.g., images), this crashes the stack!"
-                            : "Passing by pointer is instant. Only the address (8 bytes) is copied, regardless of the struct size."}
+            <div className="grid md:grid-cols-2 gap-12">
+                {/* Controls */}
+                <div className="space-y-6">
+                    <div className="bg-muted p-4 rounded-xl border border-border">
+                        <label className="text-xs text-muted-foreground font-bold uppercase mb-2 block">int i (4 Bytes)</label>
+                        <input
+                            type="number" value={intVal} onChange={e => handleIntChange(Number(e.target.value))}
+                            className="bg-background border border-border rounded p-2 text-foreground w-full font-mono"
+                        />
+                    </div>
+                    <div className="bg-muted p-4 rounded-xl border border-border relative overflow-hidden">
+                        <label className="text-xs text-muted-foreground font-bold uppercase mb-2 block">char c (1 Byte)</label>
+                        <div className="text-2xl font-mono font-bold text-foreground">{charVal}</div>
+                        {mode === 'union' && <div className="absolute top-2 right-2 text-[10px] text-orange-500 font-bold animate-pulse">OVERWRITTEN!</div>}
+                    </div>
+                    <div className="bg-muted p-4 rounded-xl border border-border relative overflow-hidden">
+                        <label className="text-xs text-muted-foreground font-bold uppercase mb-2 block">float f (4 Bytes)</label>
+                        <div className="text-2xl font-mono font-bold text-foreground">{floatVal}</div>
+                        {mode === 'union' && <div className="absolute top-2 right-2 text-[10px] text-orange-500 font-bold animate-pulse">CORRUPTED!</div>}
                     </div>
                 </div>
 
-                {/* Visualizer */}
-                <div className="relative h-48 bg-black/5 dark:bg-black/40 rounded-xl border border-border flex items-center justify-center overflow-hidden">
-                    <div className="absolute top-2 left-2 text-[10px] text-muted-foreground uppercase font-bold">Stack Frame Visualization</div>
+                {/* Visualization */}
+                <div className="flex flex-col justify-center gap-4">
+                    <div className="text-center text-sm font-bold text-muted-foreground mb-2">Memory Layout</div>
 
-                    {mode === 'value' ? (
-                        <div className="w-48 h-32 bg-red-500 animate-pulse rounded flex items-center justify-center text-white font-bold shadow-2xl">
-                            HUGE COPY (1KB)
+                    {mode === 'struct' ? (
+                        <div className="flex flex-col gap-2 animate-in slide-in-from-left-4">
+                            <div className="h-16 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">int i (4B)</div>
+                            <div className="h-8 bg-purple-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg w-1/4">char c (1B)</div>
+                            <div className="h-16 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">float f (4B)</div>
+                            <div className="mt-2 text-center text-xs text-muted-foreground">Total Size: 9+ Bytes (Padding added)</div>
                         </div>
                     ) : (
-                        <div className="w-16 h-8 bg-green-500 rounded flex items-center justify-center text-white font-bold shadow-2xl animate-in zoom-in">
-                            PTR (8B)
+                        <div className="relative h-48 border-4 border-orange-500 rounded-xl bg-orange-100 dark:bg-orange-900/10 flex items-center justify-center overflow-hidden animate-in zoom-in">
+                            <div className="absolute inset-0 bg-blue-600/30 flex items-center justify-center">
+                                <span className="text-blue-700 dark:text-blue-300 font-bold opacity-50 text-4xl">int i</span>
+                            </div>
+                            <div className="absolute top-0 left-0 w-1/4 h-full bg-purple-600/30 flex items-start p-2">
+                                <span className="text-purple-700 dark:text-purple-300 font-bold text-xs">char c</span>
+                            </div>
+                            <div className="absolute inset-0 border-2 border-green-500/30 flex items-end justify-center pb-2">
+                                <span className="text-green-700 dark:text-green-300 font-bold opacity-50 text-xl">float f</span>
+                            </div>
+                            <div className="absolute bottom-2 right-2 bg-black/50 px-2 py-1 rounded text-xs text-orange-400 font-bold">
+                                Total Size: 4 Bytes (Largest Member)
+                            </div>
                         </div>
                     )}
-
-                    {mode === 'value' && <div className="absolute bottom-2 text-xs text-red-500 font-bold flex items-center gap-1"><AlertTriangle size={12} /> High Memory Usage</div>}
                 </div>
             </div>
+
+            <TheoryCard title="Deep Dive: Size Calculation" variant={mode === 'struct' ? 'blue' : 'orange'}>
+                {mode === 'struct' ? (
+                    <p className="text-xs">
+                        <strong>Struct Size:</strong> Sum of all members + Padding for alignment.
+                        <br /><code>sizeof(struct)</code> = 4 + 1 + 3(pad) + 4 = 12 Bytes (typically).
+                    </p>
+                ) : (
+                    <p className="text-xs">
+                        <strong>Union Size:</strong> Size of the <strong>LARGEST</strong> member.
+                        <br />Since <code>int</code> and <code>float</code> are both 4 bytes, the union is 4 bytes. All members start at offset 0.
+                        Writing to one overwrites the bits of the others.
+                    </p>
+                )}
+            </TheoryCard>
         </div>
     );
 };
 
-const BitFieldsLab = () => {
+const TaggedUnionLab = () => {
+    const [type, setType] = useState<'INT' | 'FLOAT' | 'STR'>('INT');
+
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Minimize2 size={20} className="text-yellow-500" /> Bit Fields (Memory Packing)
+                <Box size={20} className="text-green-500" /> Safe Usage: Tagged Union
             </h3>
 
             <div className="grid md:grid-cols-2 gap-8">
                 <div>
-                    <TheoryCard title="The Problem" variant="yellow">
+                    <TheoryCard title="Polymorphism in C" variant="green">
                         <p className="text-sm">
-                            Normally, an <code>int</code> takes 4 bytes (32 bits). But what if you only need to store a number from 0-31? That only needs 5 bits.
-                            The rest is wasted.
+                            Since C lacks "Classes" with dynamic types, we use <strong>Tagged Unions</strong> to simulate Polymorphism (a variable that can hold different types).
+                            <br /><br />
+                            <strong>Structure:</strong> A <code>struct</code> containing an <code>enum</code> (Tag) and a <code>union</code> (Value).
                         </p>
                     </TheoryCard>
-                    <CodeBlock title="Struct with Bit Fields" code={'struct Date {\n  unsigned int day : 5;   // 0-31\n  unsigned int month : 4; // 0-15\n  unsigned int year : 11; // 0-2047\n};'} />
+                    <CodeBlock
+                        title="Safe Pattern"
+                        code={'struct Variant {\n  enum { INT, FLOAT, STR } type;\n  union {\n    int i;\n    float f;\n    char str[10];\n  } val;\n};'}
+                    />
                 </div>
 
-                <div className="flex flex-col justify-center">
-                    <div className="bg-muted border border-border rounded-xl p-6">
-                        <div className="text-xs text-muted-foreground font-bold uppercase mb-4 text-center">32-Bit Integer Layout</div>
+                <div className="bg-muted p-6 rounded-xl border border-border flex flex-col justify-center">
+                    <div className="flex gap-2 mb-6 justify-center">
+                        {['INT', 'FLOAT', 'STR'].map(t => (
+                            <button
+                                key={t}
+                                onClick={() => setType(t as any)}
+                                className={`px-3 py-1 rounded text-xs font-bold transition-all ${type === t ? 'bg-green-600 text-white' : 'bg-card border border-border text-muted-foreground'}`}
+                            >
+                                Set {t}
+                            </button>
+                        ))}
+                    </div>
 
-                        <div className="flex h-16 rounded-lg overflow-hidden border-2 border-border bg-black">
-                            {/* Day */}
-                            <div className="w-[15%] bg-blue-600 flex items-center justify-center text-[10px] md:text-xs font-bold text-white border-r border-border relative group" title="5 Bits">
-                                Day
-                                <span className="absolute -bottom-6 text-[9px] bg-blue-900 px-1 rounded text-blue-200 opacity-0 group-hover:opacity-100">5 bits</span>
-                            </div>
-                            {/* Month */}
-                            <div className="w-[12%] bg-green-600 flex items-center justify-center text-[10px] md:text-xs font-bold text-white border-r border-border relative group" title="4 Bits">
-                                Mon
-                                <span className="absolute -bottom-6 text-[9px] bg-green-900 px-1 rounded text-green-200 opacity-0 group-hover:opacity-100">4 bits</span>
-                            </div>
-                            {/* Year */}
-                            <div className="w-[33%] bg-purple-600 flex items-center justify-center text-[10px] md:text-xs font-bold text-white border-r border-border relative group" title="11 Bits">
-                                Year
-                                <span className="absolute -bottom-6 text-[9px] bg-purple-900 px-1 rounded text-purple-200 opacity-0 group-hover:opacity-100">11 bits</span>
-                            </div>
-                            {/* Unused */}
-                            <div className="flex-1 bg-muted flex items-center justify-center text-[10px] text-muted-foreground pattern-diagonal-lines">
-                                Unused (12 bits)
-                            </div>
+                    <div className="bg-black p-4 rounded-lg border border-slate-700 font-mono text-sm relative overflow-hidden">
+                        <div className="flex items-center gap-4 mb-2">
+                            <span className="text-blue-400 font-bold">tag:</span>
+                            <span className="text-white">{type}</span>
                         </div>
-
-                        <div className="mt-8 text-center">
-                            <span className="text-sm font-bold text-foreground">Total Used: 20 Bits</span>
-                            <span className="text-xs text-muted-foreground block">Fits inside a single 4-byte integer!</span>
+                        <div className="border-t border-slate-800 my-2"></div>
+                        <div className="relative h-12 flex items-center">
+                            {type === 'INT' && <span className="text-green-400 font-bold text-xl animate-in fade-in">val.i = 42</span>}
+                            {type === 'FLOAT' && <span className="text-orange-400 font-bold text-xl animate-in fade-in">val.f = 3.14</span>}
+                            {type === 'STR' && <span className="text-purple-400 font-bold text-xl animate-in fade-in">val.str = "Hi"</span>}
                         </div>
                     </div>
                 </div>
@@ -388,40 +232,124 @@ const BitFieldsLab = () => {
     );
 };
 
-const SelfReferential = () => {
+const EndiannessInspector = () => {
+    const val = 0x11223344;
+
     return (
         <div className="bg-card p-6 rounded-xl border border-border my-8">
             <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                <Link size={20} className="text-orange-500" /> Self-Referential Structures
+                <Binary size={20} className="text-yellow-500" /> Type Punning & Endianness
             </h3>
 
-            <div className="flex flex-col md:flex-row gap-8 items-center">
-                <div className="flex-1 space-y-4">
-                    <TheoryCard title="The Basis of Data Structures" variant="orange">
-                        <p>
-                            A structure cannot contain an instance of itself (infinite size!), but it CAN contain a <strong>pointer to itself</strong>.
-                            This is how Linked Lists and Trees are built.
+            <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                    <TheoryCard title="Type Punning" variant="yellow">
+                        <p className="text-sm">
+                            <strong>Type Punning</strong> is accessing the same memory location using different types.
+                            Unions make this easy (though dangerous).
+                            <br /><br />
+                            Here, we write an <code>int</code> but read it back as an <code>array of chars</code> to see the individual bytes.
                         </p>
                     </TheoryCard>
-                    <CodeBlock code={'struct Node {\n  int data;\n  struct Node *next;\n};'} />
+                    <CodeBlock code={'union {\n  int i;\n  char c[4];\n} u;\nu.i = 0x11223344;'} />
                 </div>
 
-                <div className="flex-1 flex gap-4 items-center justify-center">
-                    {/* Node A */}
-                    <div className="bg-muted border border-orange-500/50 p-4 rounded-lg flex flex-col items-center w-24 relative">
-                        <div className="text-xs text-orange-500 font-bold mb-2">Node A</div>
-                        <div className="w-full bg-black p-1 text-center text-white mb-1 rounded text-sm">10</div>
-                        <div className="w-full bg-blue-100 dark:bg-blue-900/30 p-1 text-center text-blue-600 dark:text-blue-300 rounded text-[10px]">*next</div>
-
-                        {/* Arrow */}
-                        <div className="absolute top-1/2 -right-6 w-6 h-0.5 bg-blue-500"></div>
+                <div className="flex flex-col justify-center gap-4">
+                    <h4 className="text-xs font-bold text-muted-foreground uppercase text-center mb-2">Memory View (Little Endian)</h4>
+                    <div className="flex gap-2 justify-center">
+                        {['44', '33', '22', '11'].map((byte, i) => (
+                            <div key={i} className="flex flex-col items-center group">
+                                <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-500/50 rounded flex items-center justify-center text-yellow-600 dark:text-yellow-400 font-mono font-bold shadow-lg transition-transform group-hover:scale-110">
+                                    {byte}
+                                </div>
+                                <span className="text-[10px] text-muted-foreground mt-1">c[{i}]</span>
+                                <span className="text-[9px] text-muted-foreground/70">Addr +{i}</span>
+                            </div>
+                        ))}
                     </div>
+                    <div className="text-center text-xs text-muted-foreground bg-muted p-2 rounded border border-border mt-4">
+                        Note: Least Significant Byte (44) is stored at the Lowest Address.
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
-                    {/* Node B */}
-                    <div className="bg-muted border border-orange-500/50 p-4 rounded-lg flex flex-col items-center w-24">
-                        <div className="text-xs text-orange-500 font-bold mb-2">Node B</div>
-                        <div className="w-full bg-black p-1 text-center text-white mb-1 rounded text-sm">20</div>
-                        <div className="w-full bg-card p-1 text-center text-muted-foreground rounded text-[10px]">NULL</div>
+const NetworkPacket = () => {
+    return (
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <Network size={20} className="text-blue-500" /> Real World: Network Packets
+            </h3>
+
+            <div className="flex flex-col md:flex-row gap-8">
+                <div className="flex-1">
+                    <TheoryCard title="Packet Parsing" variant="blue">
+                        <p className="text-sm">
+                            Network protocols (like TCP/IP) send data as a stream of bytes.
+                            Unions allow us to define a "Packet Template" to overlay onto this raw stream, instantly parsing headers without math.
+                        </p>
+                    </TheoryCard>
+                </div>
+                <div className="flex-1 bg-muted p-4 rounded-xl border border-border">
+                    <CodeBlock title="IP Header Parser" code={'union IP_Packet {\n  struct {\n    char version;\n    char src_ip[4];\n    char dest_ip[4];\n    char data[20];\n  } header;\n  char raw_buffer[29];\n};'} />
+                    <div className="mt-2 text-xs text-muted-foreground text-center">
+                        Accessing <code>packet.raw_buffer</code> gives the byte stream.
+                        <br />Accessing <code>packet.header.version</code> gives the parsed value instantly.
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const RegisterMap = () => {
+    const [reg, setReg] = useState(0);
+
+    const toggleBit = (bit: number) => {
+        setReg(prev => prev ^ (1 << bit));
+    };
+
+    return (
+        <div className="bg-card p-6 rounded-xl border border-border my-8">
+            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                <Cpu size={20} className="text-red-500" /> Hardware Registers (Bit-Field Union)
+            </h3>
+
+            <div className="grid md:grid-cols-2 gap-12">
+                <div className="space-y-4">
+                    <TheoryCard title="Bit-Addressable Memory" variant="red">
+                        <p className="text-sm">
+                            In embedded systems (Arduino, STM32), we often need to access a full 8-bit register AND individual control bits simultaneously.
+                            A Union of a <code>byte</code> and a <code>struct</code> with bit-fields makes this easy.
+                        </p>
+                    </TheoryCard>
+
+                    <div className="flex items-center justify-between bg-black p-3 rounded border border-slate-800">
+                        <span className="text-slate-400 font-bold">Raw Value (Hex)</span>
+                        <span className="text-red-400 font-mono font-bold text-xl">0x{reg.toString(16).toUpperCase().padStart(2, '0')}</span>
+                    </div>
+                </div>
+
+                <div className="flex flex-col items-center justify-center">
+                    <div className="grid grid-cols-4 gap-2 mb-4">
+                        {[7, 6, 5, 4, 3, 2, 1, 0].map(i => (
+                            <button
+                                key={i}
+                                onClick={() => toggleBit(i)}
+                                className={`w-10 h-12 rounded border flex flex-col items-center justify-center transition-all ${(reg & (1 << i))
+                                    ? 'bg-red-600 border-red-400 text-white shadow-[0_0_10px_rgba(239,68,68,0.5)]'
+                                    : 'bg-muted border-border text-muted-foreground'
+                                    }`}
+                            >
+                                <span className="text-lg font-bold font-mono">{(reg & (1 << i)) ? 1 : 0}</span>
+                                <span className="text-[8px] mt-1">Bit {i}</span>
+                            </button>
+                        ))}
+                    </div>
+                    <div className="text-center text-xs text-muted-foreground">
+                        Union allows accessing <code>reg.byte</code> OR <code>reg.bits.bit3</code> instantly.
                     </div>
                 </div>
             </div>
@@ -440,7 +368,7 @@ export default function Lecture3Page() {
                 <div className="flex items-center gap-3">
                     <img src="/cunitsLD/logo.png" alt="C-Units Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-500/20" />
                     <div className="hidden md:block">
-                        <h1 className="font-bold text-foreground text-sm leading-tight">Advanced Structures</h1>
+                        <h1 className="font-bold text-foreground text-sm leading-tight">Unions & Memory</h1>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Unit 6 • Lecture 3</p>
                     </div>
                 </div>
@@ -453,76 +381,61 @@ export default function Lecture3Page() {
 
                 {/* HERO */}
                 <div className="text-center space-y-6">
-                    <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 px-4 py-1.5 rounded-full text-xs font-bold animate-fade-in-up">
-                        <Database size={14} /> Complex Data Types
+                    <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-500/30 text-orange-600 dark:text-orange-300 px-4 py-1.5 rounded-full text-xs font-bold animate-fade-in-up">
+                        <Combine size={14} /> Shared Memory
                     </div>
                     <h1 className="text-5xl md:text-7xl font-extrabold text-foreground tracking-tight">
-                        Structuring the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-foreground dark:from-blue-400 dark:via-indigo-400 dark:to-white">Universe</span>
+                        The <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-red-600 to-foreground dark:from-orange-400 dark:via-red-400 dark:to-white">Union</span> of Data
                     </h1>
                     <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                        Real-world data is complex. We need arrays of objects, objects inside objects, and pointers that link them all together.
+                        Structures place variables side-by-side. Unions stack them on top of each other.
+                        Powerful for saving memory, but dangerous if misunderstood.
                     </p>
                 </div>
 
-                {/* SECTION 1: ARRAYS OF STRUCTS */}
+                {/* SECTION 1: STRUCT VS UNION */}
                 <section>
-                    <SectionHeader title="Array of Structures" icon={List} color="blue" />
-                    <p className="text-muted-foreground mb-8">
-                        Why make 50 separate variables for 50 students? Create an array of structures to manage them all in one contiguous block of memory.
-                    </p>
-                    <ArrayOfStructs />
-                </section>
-
-                {/* SECTION 2: NESTED STRUCTS */}
-                <section>
-                    <SectionHeader title="Nested Structures" icon={Box} color="purple" />
-                    <p className="text-muted-foreground mb-8">
-                        Structures can contain other structures. This allows us to build hierarchical data models (e.g., An Employee has an Address, an Address has a City).
-                    </p>
-                    <NestedStructs />
-                </section>
-
-                {/* SECTION 3: POINTERS TO STRUCTS */}
-                <section>
-                    <SectionHeader title="Pointers to Structures" icon={MousePointer} color="green" />
-                    <TheoryCard title="The Arrow Operator (->)" variant="green">
-                        <p className="mb-2">When using a pointer to a structure, accessing members requires two steps: Dereference <code>*</code> and Access <code>.</code>.</p>
-                        <div className="bg-black p-2 rounded text-center mb-2">
-                            <code className="text-red-400">(*ptr).member</code>
-                        </div>
-                        <p className="mb-2">This is clumsy. C provides the arrow operator as a cleaner shorthand:</p>
-                        <div className="bg-black p-2 rounded text-center">
-                            <code className="text-green-400">ptr-&gt;member</code>
-                        </div>
+                    <SectionHeader title="Struct vs Union" icon={Layers} color="blue" />
+                    <TheoryCard title="The Core Difference" variant="blue">
+                        <ul className="list-disc pl-4 space-y-1 text-sm text-muted-foreground">
+                            <li><strong>Struct:</strong> Allocates memory for ALL members. Size = Sum of members (+ padding).</li>
+                            <li><strong>Union:</strong> Allocates memory for LARGEST member only. All members share the same start address.</li>
+                        </ul>
                     </TheoryCard>
-                    <ArrowOperator />
+                    <StructVsUnion />
                 </section>
 
-                {/* SECTION 4: FUNCTIONS & STRUCTS */}
+                {/* SECTION 2: SAFE USAGE */}
                 <section>
-                    <SectionHeader title="Passing Structures" icon={ArrowLeftRight} color="red" />
+                    <SectionHeader title="Safe Usage Patterns" icon={CheckCircle} color="green" />
                     <p className="text-muted-foreground mb-8">
-                        Efficiency matters. Copying large structures by value is slow. Using pointers (Pass by Reference) is instantaneous.
+                        Since unions hold only one value at a time, how do you track which one is active? Use a "Tag".
                     </p>
-                    <FunctionStructs />
+                    <TaggedUnionLab />
                 </section>
 
-                {/* SECTION 5: BIT FIELDS */}
+                {/* SECTION 3: SYSTEM LEVEL */}
                 <section>
-                    <SectionHeader title="Memory Optimization: Bit Fields" icon={Minimize2} color="yellow" />
+                    <SectionHeader title="System Hacking: Endianness" icon={Binary} color="yellow" />
                     <p className="text-muted-foreground mb-8">
-                        For system programming, we often need to store data in specific numbers of bits (not bytes) to save space or match hardware registers.
+                        Unions allow us to bypass type safety and look at the raw bytes of an integer.
                     </p>
-                    <BitFieldsLab />
+                    <EndiannessInspector />
                 </section>
 
-                {/* SECTION 6: SELF REFERENTIAL */}
+                {/* SECTION 4: REAL WORLD APPS */}
                 <section>
-                    <SectionHeader title="Self-Referential Structures" icon={Link} color="orange" />
+                    <SectionHeader title="Networking: Packet Parsing" icon={Network} color="blue" />
+                    <NetworkPacket />
+                </section>
+
+                {/* SECTION 5: HARDWARE */}
+                <section>
+                    <SectionHeader title="Hardware Registers" icon={Cpu} color="red" />
                     <p className="text-muted-foreground mb-8">
-                        The foundation of dynamic data structures (Linked Lists, Trees). A struct that holds a pointer to... another struct of the same type!
+                        Combining Unions with Bit-Fields gives you ultimate control over hardware registers without bitwise math headaches.
                     </p>
-                    <SelfReferential />
+                    <RegisterMap />
                 </section>
 
             </main>
